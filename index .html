@@ -20,9 +20,11 @@
 
 <hr>
 <h2>Expense</h2>
+<p id="total">Total: $0</p>
 <ul id="expenseList"></u1>
     <script>
-function addExpense() {
+    let total = 0;
+     function addExpense() {
     let name = document.getElementById("name").value;
     let amount = document.getElementById("amount").value;
 
@@ -35,7 +37,8 @@ function addExpense() {
 
     document.getElementById("name").value = "";
     document.getElementById("amount").value = "";
-}
+total += Number(amount);
+document.getElementById("total").textContent = "Total: $" + total;
 </script>
 
 
