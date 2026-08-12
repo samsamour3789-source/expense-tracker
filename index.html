@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Expense Tracker</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #17202a;
+      padding-bottom: 30px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 25px 20px;
+      border-radius: 0 0 25px 25px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .balance {
+      background: white;
+      margin: 18px;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.07);
+    }
+
+    .balance small {
+      color: #64748b;
+    }
+
+    .balance h2 {
+      font-size: 32px;
+      margin-top: 5px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 0 18px 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 17px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    }
+
+    .card small {
+      color: #64748b;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 6px;
+    }
+
+    .section {
+      background: white;
+      margin: 18px;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    }
+
+    .section h3 {
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #2563eb;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    .budget {
+      margin-top: 10px;
+    }
+
+    .progress {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: .3s;
+    }
+
+    #warning {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .remaining {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f0fdf4;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .month-info {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .day {
+      margin-bottom: 20px;
+    }
+
+    .day-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .expense {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .expense-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .expense-name {
+      font-weight: bold;
+    }
+
+    .expense-category {
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .expense-amount {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .delete {
+      width: auto;
+      padding: 7px 10px;
+      background: #ef4444;
+      font-size: 12px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      padding: 20px 0;
+    }
+
+    .today-label {
+      color: #2563eb;
+      font-size: 12px;
+    }
+
+    @media (max-width: 400px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .balance h2 {
+        font-size: 27px;
+      }
+
+      .card strong {
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <h1>💰 Expense Tracker</h1>
+    <p id="today"></p>
+  </header>
+
+  <!-- MONTHLY MONEY -->
+  <div class="balance">
+
+    <small>💵 Monthly Income</small>
+
+    <input
+      type="number"
+      id="incomeInput"
+      placeholder="Example: 1000"
+      min="0"
+      step="0.01"
+    >
+
+    <small>💰 Remaining This Month</small>
+
+    <h2 id="remaining">$0.00</h2>
+
+    <div class="month-info">
+      Monthly expenses:
+      <strong id="monthTotal">$0.00</strong>
+    </div>
+
+  </div>
+
+  <!-- TODAY -->
+  <div class="balance">
+
+    <small>Today's Expenses</small>
+
+    <h2 id="todayTotal">$0.00</h2>
+
+    <div class="budget">
+
+      <small>Daily Budget</small>
+
+      <input
+        type="number"
+        id="budgetInput"
+        placeholder="Example: 50"
+        min="0"
+      >
+
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div id="warning"></div>
+
+    </div>
+
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards">
+
+    <div class="card">
+      <small>All Time</small>
+      <strong id="allTotal">$0.00</strong>
+    </div>
+
+    <div class="card">
+      <small>Number of Expenses</small>
+      <strong id="expenseCount">0</strong>
+    </div>
+
+  </div>
+
+  <!-- ADD EXPENSE -->
+  <div class="section">
+
+    <h3>➕ Add Expense</h3>
+
+    <input
+      type="text"
+      id="name"
+      placeholder="What did you spend on?"
+    >
+
+    <input
+      type="number"
+      id="amount"
+      placeholder="Amount"
+      min="0"
+      step="0.01"
+    >
+
+    <select id="category">
+
+      <option value="Food">🍔 Food</option>
+
+      <option value="Transport">🚗 Transport</option>
+
+      <option value="Shopping">🛍️ Shopping</option>
+
+      <option value="Bills">💡 Bills</option>
+
+      <option value="Entertainment">🎮 Entertainment</option>
+
+      <option value="Health">💊 Health</option>
+
+      <option value="Other">📦 Other</option>
+
+    </select>
+
+    <button onclick="addExpense()">
+      Add Expense
+    </button>
+
+  </div>
+
+  <!-- HISTORY -->
+  <div class="section">
+
+    <h3>📅 Expense History</h3>
+
+    <div id="history"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+  let expenses =
+    JSON.parse(localStorage.getItem("expenses")) || [];
+
+  let budget =
+    Number(localStorage.getItem("dailyBudget")) || 0;
+
+  let income =
+    Number(localStorage.getItem("monthlyIncome")) || 0;
+
+
+  const budgetInput =
+    document.getElementById("budgetInput");
+
+  const incomeInput =
+    document.getElementById("incomeInput");
+
+
+  budgetInput.value =
+    budget || "";
+
+  incomeInput.value =
+    income || "";
+
+
+  function getToday() {
+
+    const date = new Date();
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(date.getMonth() + 1)
+      .padStart(2, "0");
+
+    const day =
+      String(date.getDate())
+      .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+
+  function getCurrentMonth() {
+
+    const date = new Date();
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(date.getMonth() + 1)
+      .padStart(2, "0");
+
+    return `${year}-${month}`;
+  }
+
+
+  function displayDate(dateString) {
+
+    const date =
+      new Date(dateString + "T00:00:00");
+
+    return date.toLocaleDateString(
+      undefined,
+      {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }
+    );
+  }
+
+
+  function money(number) {
+
+    return "$" +
+      Number(number).toFixed(2);
+
+  }
+
+
+  function save() {
+
+    localStorage.setItem(
+      "expenses",
+      JSON.stringify(expenses)
+    );
+
+    localStorage.setItem(
+      "dailyBudget",
+      budget
+    );
+
+    localStorage.setItem(
+      "monthlyIncome",
+      income
+    );
+
+  }
+
+
+  function addExpense() {
+
+    const name =
+      document
+      .getElementById("name")
+      .value
+      .trim();
+
+    const amount =
+      Number(
+        document
+        .getElementById("amount")
+        .value
+      );
+
+    const category =
+      document
+      .getElementById("category")
+      .value;
+
+
+    if (!name) {
+
+      alert(
+        "Please enter what you spent on."
+      );
+
+      return;
+    }
+
+
+    if (!amount || amount <= 0) {
+
+      alert(
+        "Please enter a valid amount."
+      );
+
+      return;
+    }
+
+
+    const expense = {
+
+      id: Date.now(),
+
+      name: name,
+
+      amount: amount,
+
+      category: category,
+
+      date: getToday(),
+
+      createdAt:
+        new Date().toISOString()
+
+    };
+
+
+    expenses.push(expense);
+
+    save();
+
+
+    document
+      .getElementById("name")
+      .value = "";
+
+    document
+      .getElementById("amount")
+      .value = "";
+
+
+    update();
+
+  }
+
+
+  function deleteExpense(id) {
+
+    const ok =
+      confirm(
+        "Delete this expense?"
+      );
+
+
+    if (!ok) return;
+
+
+    expenses =
+      expenses.filter(
+        expense =>
+          expense.id !== id
+      );
+
+
+    save();
+
+    update();
+
+  }
+
+
+  function update() {
+
+    const today =
+      getToday();
+
+    const currentMonth =
+      getCurrentMonth();
+
+
+    // TODAY
+    const todayExpenses =
+      expenses.filter(
+        expense =>
+          expense.date === today
+      );
+
+
+    const todayTotal =
+      todayExpenses.reduce(
+        (sum, expense) =>
+          sum + Number(expense.amount),
+        0
+      );
+
+
+    // CURRENT MONTH
+    const monthExpenses =
+      expenses.filter(
+        expense =>
+          expense.date.startsWith(
+            currentMonth
+          )
+      );
+
+
+    const monthTotal =
+      monthExpenses.reduce(
+        (sum, expense) =>
+          sum + Number(expense.amount),
+        0
+      );
+
+
+    // ALL TIME
+    const allTotal =
+      expenses.reduce(
+        (sum, expense) =>
+          sum + Number(expense.amount),
+        0
+      );
+
+
+    // REMAINING
+    const remaining =
+      income - monthTotal;
+
+
+    document
+      .getElementById("todayTotal")
+      .textContent =
+      money(todayTotal);
+
+
+    document
+      .getElementById("monthTotal")
+      .textContent =
+      money(monthTotal);
+
+
+    document
+      .getElementById("remaining")
+      .textContent =
+      money(remaining);
+
+
+    document
+      .getElementById("allTotal")
+      .textContent =
+      money(allTotal);
+
+
+    document
+      .getElementById("expenseCount")
+      .textContent =
+      expenses.length;
+
+
+    document
+      .getElementById("today")
+      .textContent =
+      displayDate(today);
+
+
+    // Remaining color/message
+    const remainingElement =
+      document.getElementById(
+        "remaining"
+      );
+
+
+    if (income > 0 && remaining < 0) {
+
+      remainingElement.textContent =
+        "⚠️ " + money(Math.abs(remaining)) +
+        " over budget";
+
+    }
+
+
+    updateBudget(todayTotal);
+
+    showHistory();
+
+  }
+
+
+  function updateBudget(todayTotal) {
+
+    const bar =
+      document.getElementById(
+        "progressBar"
+      );
+
+    const warning =
+      document.getElementById(
+        "warning"
+      );
+
+
+    if (!budget || budget <= 0) {
+
+      bar.style.width = "0%";
+
+      warning.textContent =
+        "Set a daily budget to track your limit.";
+
+      return;
+    }
+
+
+    let percentage =
+      (todayTotal / budget) * 100;
+
+
+    bar.style.width =
+      Math.min(
+        percentage,
+        100
+      ) + "%";
+
+
+    if (todayTotal >= budget) {
+
+      warning.textContent =
+        "⚠️ You reached your daily budget!";
+
+    }
+
+    else if (percentage >= 80) {
+
+      warning.textContent =
+        "⚠️ Careful! You are close to your budget.";
+
+    }
+
+    else {
+
+      const remaining =
+        budget - todayTotal;
+
+      warning.textContent =
+        "You have " +
+        money(remaining) +
+        " left today.";
+
+    }
+
+  }
+
+
+  // DAILY BUDGET
+  budgetInput.addEventListener(
+    "input",
+    function() {
+
+      budget =
+        Number(this.value) || 0;
+
+      save();
+
+      update();
+
+    }
+  );
+
+
+  // MONTHLY INCOME
+  incomeInput.addEventListener(
+    "input",
+    function() {
+
+      income =
+        Number(this.value) || 0;
+
+      save();
+
+      update();
+
+    }
+  );
+
+
+  function showHistory() {
+
+    const history =
+      document.getElementById(
+        "history"
+      );
+
+
+    if (expenses.length === 0) {
+
+      history.innerHTML =
+        '<div class="empty">No expenses yet.</div>';
+
+      return;
+    }
+
+
+    const groups = {};
+
+
+    expenses.forEach(
+      expense => {
+
+        if (!groups[expense.date]) {
+
+          groups[expense.date] = [];
+
+        }
+
+        groups[expense.date]
+          .push(expense);
+
+      }
+    );
+
+
+    const dates =
+      Object.keys(groups)
+        .sort()
+        .reverse();
+
+
+    history.innerHTML = "";
+
+
+    dates.forEach(
+      date => {
+
+        const dayDiv =
+          document.createElement("div");
+
+        dayDiv.className = "day";
+
+
+        const total =
+          groups[date].reduce(
+            (sum, expense) =>
+              sum + Number(expense.amount),
+            0
+          );
+
+
+        const isToday =
+          date === getToday();
+
+
+        dayDiv.innerHTML = `
+
+          <div class="day-title">
+
+            <span>
+
+              ${displayDate(date)}
+
+              ${
+                isToday
+                ? '<span class="today-label"> TODAY</span>'
+                : ''
+              }
+
+            </span>
+
+            <span>
+              ${money(total)}
+            </span>
+
+          </div>
+
+        `;
+
+
+        groups[date]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt) -
+              new Date(a.createdAt)
+          )
+          .forEach(
+            expense => {
+
+              const item =
+                document.createElement(
+                  "div"
+                );
+
+
+              item.className =
+                "expense";
+
+
+              item.innerHTML = `
+
+                <div class="expense-info">
+
+                  <div class="expense-name">
+                    ${escapeHTML(expense.name)}
+                  </div>
+
+                  <div class="expense-category">
+                    ${expense.category}
+                  </div>
+
+                </div>
+
+
+                <div>
+
+                  <span class="expense-amount">
+                    ${money(expense.amount)}
+                  </span>
+
+
+                  <button
+                    class="delete"
+                    onclick="deleteExpense(${expense.id})"
+                  >
+                    Delete
+                  </button>
+
+                </div>
+
+              `;
+
+
+              dayDiv.appendChild(item);
+
+            }
+          );
+
+
+        history.appendChild(dayDiv);
+
+      }
+    );
+
+  }
+
+
+  function escapeHTML(text) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+  }
+
+
+  update();
+
+</script>
+
+</body>
+</html>
