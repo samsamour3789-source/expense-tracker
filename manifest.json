@@ -1,0 +1,12 @@
+{
+  "name": "مصروفي",
+  "short_name": "مصروفي",
+  "description": "تطبيق ذكي لإدارة المصروف والمدخول",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#111111",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl"
+}
