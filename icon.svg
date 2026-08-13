@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="90" fill="#111111"/>
+
+  <!-- Wallet -->
+  <rect x="105" y="150" width="302" height="205" rx="35"
+        fill="#202020" stroke="#D99A00" stroke-width="6"/>
+
+  <rect x="125" y="175" width="260" height="120" rx="25"
+        fill="#292929"/>
+
+  <!-- Money -->
+  <rect x="145" y="105" width="220" height="105" rx="18"
+        fill="#35B86B" transform="rotate(-7 255 157)"/>
+
+  <circle cx="255" cy="157" r="30" fill="#198A4A"/>
+  <text x="255" y="170"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="45"
+        font-weight="bold"
+        fill="white">$</text>
+
+  <!-- Wallet button -->
+  <circle cx="355" cy="250" r="22" fill="#F5B400"/>
+
+  <!-- Coins -->
+  <circle cx="150" cy="355" r="45" fill="#F5B400"/>
+  <circle cx="195" cy="375" r="45" fill="#D99400"/>
+  <circle cx="240" cy="355" r="45" fill="#FFC72C"/>
+
+  <text x="150" y="371"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="42"
+        font-weight="bold"
+        fill="#8A5A00">$</text>
+
+  <text x="195" y="391"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="42"
+        font-weight="bold"
+        fill="#8A5A00">$</text>
+
+  <text x="240" y="371"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="42"
+        font-weight="bold"
+        fill="#8A5A00">$</text>
+
+  <!-- App name -->
+  <text x="256" y="445"
+        text-anchor="middle"
+        direction="rtl"
+        font-family="Arial"
+        font-size="48"
+        font-weight="bold"
+        fill="white">مصروفي</text>
+</svg>
