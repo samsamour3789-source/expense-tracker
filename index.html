@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>My Expenses</title>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
+}
+body {
+  margin: 0;
+  background: #f4f5f7;
+  color: #171717;
+}
+.container {
+  max-width: 520px;
+  margin: auto;
+  padding: 18px;
+}
+h1 {
+  text-align: center;
+  margin: 8px 0 4px;
+  font-size: 30px;
+}
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 18px;
+}
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 18px rgba(0,0,0,.06);
+}
+.top-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.top-buttons button {
+  margin: 0;
+}
+button,
+input,
+select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 13px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  margin-bottom: 10px;
+  background: white;
+}
+button {
+  border: none;
+  background: #111;
+  color: white;
+  font-weight: 700;
+}
+.secondary {
+  background: #eeeeee;
+  color: #111;
+}
+.balance {
+  text-align: center;
+}
+.balance-title {
+  color: #777;
+  font-size: 15px;
+}
+.balance-number {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 5px 0;
+}
+.small {
+  color: #888;
+  font-size: 12px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 15px;
+}
+.stat {
+  background: #f5f5f5;
+  padding: 12px 5px;
+  border-radius: 14px;
+  text-align: center;
+}
+.stat-title {
+  font-size: 12px;
+  color: #777;
+}
+.stat-value {
+  font-weight: 700;
+  margin-top: 4px;
+}
+.green { color: #159447; }
+.red { color: #d92d20; }
+.blue { color: #1769e0; }
+h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.warning,
+.success {
+  padding: 12px;
+  border-radius: 13px;
+  margin-top: 12px;
+  display: none;
+}
+.warning {
+  background: #fff3cd;
+  color: #856404;
+}
+.success {
+  background: #e7f7ed;
+  color: #137333;
+}
+.item,
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid #eee;
+}
+.item:last-child,
+.transaction:last-child {
+  border-bottom: none;
+}
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 21px;
+}
+.name {
+  font-weight: 700;
+}
+.amount {
+  font-weight: 800;
+}
+.delete {
+  width: auto;
+  padding: 7px 10px;
+  margin: 5px 0 0;
+  background: #ffe7e5;
+  color: #d92d20;
+  font-size: 12px;
+}
+.empty {
+  text-align: center;
+  color: #888;
+  padding: 15px;
+}
+.rate-box {
+  background: #f6f6f6;
+  padding: 12px;
+  border-radius: 13px;
+  margin-bottom: 10px;
+}
+body.rtl {
+  direction: rtl;
+}
+body.rtl .section-title,
+body.rtl .item,
+body.rtl .transaction {
+  text-align: right;
+}
+body.rtl .top-buttons {
+  direction: rtl;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="appTitle">💰 My Expenses</h1>
+  <div class="subtitle" id="subtitle">
+    Smart Personal Finance Tracker
+  </div>
+  <div class="top-buttons">
+    <button onclick="toggleLanguage()" id="languageButton">
+      🇱🇧 العربية
+    </button>
+    <button onclick="scrollToSettings()" class="secondary" id="settingsButton">
+      ⚙️ Settings
+    </button>
+  </div>
+  <!-- DASHBOARD -->
+  <div class="card balance">
+    <div class="balance-title" id="balanceTitle">
+      Total Balance
+    </div>
+    <div class="balance-number" id="balance">
+      $0.00
+    </div>
+    <div class="small" id="baseLabel">
+      Base currency: USD
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-title" id="incomeTitle">Income</div>
+        <div class="stat-value green" id="income">$0.00</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title" id="fixedTitle">Fixed</div>
+        <div class="stat-value blue" id="fixed">$0.00</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title" id="dailyTitle">Daily</div>
+        <div class="stat-value red" id="daily">$0.00</div>
+      </div>
+    </div>
+    <div class="warning" id="warning"></div>
+    <div class="success" id="success"></div>
+  </div>
+  <!-- SETTINGS -->
+  <div class="card" id="settings">
+    <h2 id="settingsTitle">⚙️ Settings</h2>
+    <label id="baseCurrencyLabel">
+      Base Currency
+    </label>
+    <select id="baseCurrency" onchange="changeBaseCurrency()">
+      <option value="USD">🇺🇸 USD — US Dollar</option>
+      <option value="LBP">🇱🇧 LBP — Lebanese Pound</option>
+      <option value="SYP">🇸🇾 SYP — Syrian Pound</option>
+    </select>
+    <h3 id="exchangeTitle">
+      💱 Exchange Rates
+    </h3>
+    <div class="small" id="exchangeHelp">
+      Enter how much of each currency equals 1 USD.
+    </div>
+    <br>
+    <div class="rate-box">
+      <strong>🇱🇧 LBP</strong>
+      <input
+        type="number"
+        id="rateLBP"
+        placeholder="LBP per 1 USD"
+        inputmode="decimal"
+      >
+    </div>
+    <div class="rate-box">
+      <strong>🇸🇾 SYP</strong>
+      <input
+        type="number"
+        id="rateSYP"
+        placeholder="SYP per 1 USD"
+        inputmode="decimal"
+      >
+    </div>
+    <button onclick="saveRates()" id="saveRatesButton">
+      Save Exchange Rates
+    </button>
+  </div>
+  <!-- INCOME -->
+  <div class="card">
+    <h2 id="incomeSectionTitle">
+      💵 Monthly Income
+    </h2>
+    <input
+      type="number"
+      id="incomeInput"
+      placeholder="Enter income"
+      inputmode="decimal"
+    >
+    <select id="incomeCurrency">
+      <option value="USD">🇺🇸 USD — US Dollar</option>
+      <option value="LBP">🇱🇧 LBP — Lebanese Pound</option>
+      <option value="SYP">🇸🇾 SYP — Syrian Pound</option>
+    </select>
+    <button onclick="saveIncome()" id="saveIncomeButton">
+      Save Income
+    </button>
+  </div>
+  <!-- MONTHLY EXPENSES -->
+  <div class="card">
+    <div class="section-title">
+      <h2 id="monthlyTitle">
+        🏠 Monthly Fixed Expenses
+      </h2>
+      <span class="small" id="monthName"></span>
+    </div>
+    <input
+      type="text"
+      id="fixedName"
+      placeholder="Expense name e.g. Rent"
+    >
+    <input
+      type="number"
+      id="fixedAmount"
+      placeholder="Amount"
+      inputmode="decimal"
+    >
+    <select id="fixedCurrency">
+      <option value="USD">🇺🇸 USD — US Dollar</option>
+      <option value="LBP">🇱🇧 LBP — Lebanese Pound</option>
+      <option value="SYP">🇸🇾 SYP — Syrian Pound</option>
+    </select>
+    <select id="fixedCategory">
+      <option value="🏠">🏠 Rent</option>
+      <option value="⚡">⚡ Electricity</option>
+      <option value="💧">💧 Water</option>
+      <option value="🌐">🌐 Internet</option>
+      <option value="📱">📱 Phone</option>
+      <option value="📺">📺 Subscriptions</option>
+      <option value="📌">📌 Other</option>
+    </select>
+    <button onclick="addFixedExpense()" id="addMonthlyButton">
+      Add Monthly Expense
+    </button>
+    <div id="fixedList"></div>
+  </div>
+  <!-- DAILY EXPENSE -->
+  <div class="card">
+    <h2 id="dailySectionTitle">
+      🛒 Daily Expense
+    </h2>
+    <input
+      type="number"
+      id="expenseAmount"
+      placeholder="Amount"
+      inputmode="decimal"
+    >
+    <select id="expenseCurrency">
+      <option value="USD">🇺🇸 USD — US Dollar</option>
+      <option value="LBP">🇱🇧 LBP — Lebanese Pound</option>
+      <option value="SYP">🇸🇾 SYP — Syrian Pound</option>
+    </select>
+    <select id="expenseCategory">
+      <option value="🍔">🍔 Food</option>
+      <option value="☕">☕ Coffee</option>
+      <option value="🚗">🚗 Transportation</option>
+      <option value="🛍️">🛍️ Shopping</option>
+      <option value="🎉">🎉 Entertainment</option>
+      <option value="💊">💊 Health</option>
+      <option value="📌">📌 Other</option>
+    </select>
+    <input
+      type="text"
+      id="expenseNote"
+      placeholder="Note e.g. Coffee"
+    >
+    <button onclick="addExpense()" id="addExpenseButton">
+      Add Expense
+    </button>
+  </div>
+  <!-- HISTORY -->
+  <div class="card">
+    <div class="section-title">
+      <h2 id="historyTitle">
+        📋 Expense History
+      </h2>
+      <button
+        onclick="clearDailyExpenses()"
+        class="delete"
+        id="clearButton"
+      >
+        Clear
+      </button>
+    </div>
+    <div id="expenseList"></div>
+  </div>
+</div>
+<script>
+// ==========================================
+// TRANSLATIONS
+// ==========================================
+const translations = {
+  en: {
+    title: "💰 My Expenses",
+    subtitle: "Smart Personal Finance Tracker",
+    language: "🇱🇧 العربية",
+    settings: "⚙️ Settings",
+    balance: "Total Balance",
+    base: "Base currency",
+    income: "Income",
+    fixed: "Fixed",
+    daily: "Daily",
+    settingsTitle: "⚙️ Settings",
+    baseCurrency: "Base Currency",
+    exchange: "💱 Exchange Rates",
+    exchangeHelp:
+      "Enter how much of each currency equals 1 USD.",
+    saveRates: "Save Exchange Rates",
+    incomeSection: "💵 Monthly Income",
+    enterIncome: "Enter income",
+    saveIncome: "Save Income",
+    monthly: "🏠 Monthly Fixed Expenses",
+    expenseName: "Expense name e.g. Rent",
+    amount: "Amount",
+    addMonthly: "Add Monthly Expense",
+    dailySection: "🛒 Daily Expense",
+    note: "Note e.g. Coffee",
+    addExpense: "Add Expense",
+    history: "📋 Expense History",
+    clear: "Clear",
+    noMonthly: "No monthly expenses yet.",
+    noDaily: "No daily expenses yet.",
+    delete: "Delete",
+    validIncome: "Please enter a valid income.",
+    validExpense: "Please enter a valid amount.",
+    validMonthly:
+      "Please enter an expense name and amount.",
+    ratesSaved:
+      "Exchange rates saved successfully.",
+    validRates:
+      "Please enter valid exchange rates.",
+    clearConfirm:
+      "Are you sure you want to delete all daily expenses?",
+    overBudget:
+      "🚨 You spent more than your income.",
+    lowBudget:
+      "⚠️ Only a small part of your income is left.",
+    goodBudget:
+      "✅ Great! Your budget is under control.",
+    baseCurrencyText:
+      "Base currency:"
+  },
+  ar: {
+    title: "💰 مصروفي",
+    subtitle: "تطبيق ذكي لإدارة مصروفك",
+    language: "🇬🇧 English",
+    settings: "⚙️ الإعدادات",
+    balance: "الرصيد الإجمالي",
+    base: "العملة الأساسية",
+    income: "المدخول",
+    fixed: "الثابت",
+    daily: "اليومي",
+    settingsTitle: "⚙️ الإعدادات",
+    baseCurrency: "العملة الأساسية",
+    exchange: "💱 أسعار الصرف",
+    exchangeHelp:
+      "أدخل قيمة كل عملة مقابل 1 دولار أمريكي.",
+    saveRates: "حفظ أسعار الصرف",
+    incomeSection: "💵 المدخول الشهري",
+    enterIncome: "أدخل المدخول",
+    saveIncome: "حفظ المدخول",
+    monthly: "🏠 المصاريف الشهرية الثابتة",
+    expenseName: "اسم المصروف مثلاً إيجار",
+    amount: "المبلغ",
+    addMonthly: "إضافة مصروف شهري",
+    dailySection: "🛒 المصروف اليومي",
+    note: "ملاحظة مثلاً قهوة",
+    addExpense: "إضافة مصروف",
+    history: "📋 سجل المصاريف",
+    clear: "مسح",
+    noMonthly: "لا توجد مصاريف شهرية بعد.",
+    noDaily: "لا توجد مصاريف يومية بعد.",
+    delete: "حذف",
+    validIncome: "يرجى إدخال مدخول صحيح.",
+    validExpense: "يرجى إدخال مبلغ صحيح.",
+    validMonthly:
+      "يرجى إدخال اسم المصروف والمبلغ.",
+    ratesSaved:
+      "تم حفظ أسعار الصرف بنجاح.",
+    validRates:
+      "يرجى إدخال أسعار صرف صحيحة.",
+    clearConfirm:
+      "هل أنت متأكد أنك تريد حذف كل المصاريف اليومية؟",
+    overBudget:
+      "🚨 لقد صرفت أكثر من مدخولك.",
+    lowBudget:
+      "⚠️ لم يتبقَّ إلا جزء صغير من مدخولك.",
+    goodBudget:
+      "✅ ممتاز! ميزانيتك تحت السيطرة.",
+    baseCurrencyText:
+      "العملة الأساسية:"
+  }
+};
+// ==========================================
+// CURRENCY DATA
+// ==========================================
+const currencies = {
+  USD: {
+    symbol: "$",
+    name: "US Dollar"
+  },
+  LBP: {
+    symbol: "LBP ",
+    name: "Lebanese Pound"
+  },
+  SYP: {
+    symbol: "SYP ",
+    name: "Syrian Pound"
+  }
+};
+// ==========================================
+// DATA
+// ==========================================
+let language =
+  localStorage.getItem("language") || "en";
+let income =
+  JSON.parse(
+    localStorage.getItem("incomeData")
+  ) || null;
+let fixedExpenses =
+  JSON.parse(
+    localStorage.getItem("fixedExpenses")
+  ) || [];
+let dailyExpenses =
+  JSON.parse(
+    localStorage.getItem("dailyExpenses")
+  ) || [];
+let settings =
+  JSON.parse(
+    localStorage.getItem("settings")
+  ) || {
+    baseCurrency: "USD",
+    rates: {
+      USD: 1,
+      LBP: 1,
+      SYP: 1
+    }
+  };
+// ==========================================
+// LANGUAGE
+// ==========================================
+function t(key) {
+  return translations[language][key];
+}
+function toggleLanguage() {
+  language =
+    language === "en"
+      ? "ar"
+      : "en";
+  localStorage.setItem(
+    "language",
+    language
+  );
+  applyLanguage();
+}
+function applyLanguage() {
+  document.documentElement.lang =
+    language;
+  document.body.classList.toggle(
+    "rtl",
+    language === "ar"
+  );
+  document.getElementById("appTitle").innerText =
+    t("title");
+  document.getElementById("subtitle").innerText =
+    t("subtitle");
+  document.getElementById("languageButton").innerText =
+    t("language");
+  document.getElementById("settingsButton").innerText =
+    t("settings");
+  document.getElementById("balanceTitle").innerText =
+    t("balance");
+  document.getElementById("incomeTitle").innerText =
+    t("income");
+  document.getElementById("fixedTitle").innerText =
+    t("fixed");
+  document.getElementById("dailyTitle").innerText =
+    t("daily");
+  document.getElementById("settingsTitle").innerText =
+    t("settingsTitle");
+  document.getElementById("baseCurrencyLabel").innerText =
+    t("baseCurrency");
+  document.getElementById("exchangeTitle").innerText =
+    t("exchange");
+  document.getElementById("exchangeHelp").innerText =
+    t("exchangeHelp");
+  document.getElementById("saveRatesButton").innerText =
+    t("saveRates");
+  document.getElementById("incomeSectionTitle").innerText =
+    t("incomeSection");
+  document.getElementById("incomeInput").placeholder =
+    t("enterIncome");
+  document.getElementById("saveIncomeButton").innerText =
+    t("saveIncome");
+  document.getElementById("monthlyTitle").innerText =
+    t("monthly");
+  document.getElementById("fixedName").placeholder =
+    t("expenseName");
+  document.getElementById("fixedAmount").placeholder =
+    t("amount");
+  document.getElementById("addMonthlyButton").innerText =
+    t("addMonthly");
+  document.getElementById("dailySectionTitle").innerText =
+    t("dailySection");
+  document.getElementById("expenseAmount").placeholder =
+    t("amount");
+  document.getElementById("expenseNote").placeholder =
+    t("note");
+  document.getElementById("addExpenseButton").innerText =
+    t("addExpense");
+  document.getElementById("historyTitle").innerText =
+    t("history");
+  document.getElementById("clearButton").innerText =
+    t("clear");
+  renderFixed();
+  renderDaily();
+  updateDashboard();
+}
+// ==========================================
+// SETTINGS
+// ==========================================
+function loadSettings() {
+  document.getElementById(
+    "baseCurrency"
+  ).value =
+    settings.baseCurrency;
+  document.getElementById(
+    "rateLBP"
+  ).value =
+    settings.rates.LBP || "";
+  document.getElementById(
+    "rateSYP"
+  ).value =
+    settings.rates.SYP || "";
+}
+function saveRates() {
+  const lbp =
+    Number(
+      document.getElementById("rateLBP").value
+    );
+  const syp =
+    Number(
+      document.getElementById("rateSYP").value
+    );
+  if (lbp <= 0 || syp <= 0) {
+    alert(t("validRates"));
+    return;
+  }
+  settings.rates = {
+    USD: 1,
+    LBP: lbp,
+    SYP: syp
+  };
+  localStorage.setItem(
+    "settings",
+    JSON.stringify(settings)
+  );
+  alert(t("ratesSaved"));
+  update();
+}
+function changeBaseCurrency() {
+  settings.baseCurrency =
+    document.getElementById(
+      "baseCurrency"
+    ).value;
+  localStorage.setItem(
+    "settings",
+    JSON.stringify(settings)
+  );
+  update();
+}
+// ==========================================
+// CURRENCY CONVERSION
+// ==========================================
+function toUSD(
+  amount,
+  currency
+) {
+  const rate =
+    settings.rates[currency];
+  if (!rate || rate <= 0) {
+    return 0;
+  }
+  return Number(amount) / rate;
+}
+function fromUSD(
+  amount,
+  currency
+) {
+  const rate =
+    settings.rates[currency];
+  if (!rate || rate <= 0) {
+    return 0;
+  }
+  return Number(amount) * rate;
+}
+function toBase(
+  amount,
+  currency
+) {
+  const usd =
+    toUSD(
+      amount,
+      currency
+    );
+  return fromUSD(
+    usd,
+    settings.baseCurrency
+  );
+}
+// ==========================================
+// FORMAT MONEY
+// ==========================================
+function formatMoney(
+  amount,
+  currency
+) {
+  const symbol =
+    currencies[currency].symbol;
+  if (
+    currency === "LBP" ||
+    currency === "SYP"
+  ) {
+    return (
+      symbol +
+      Math.round(amount)
+        .toLocaleString("en-US")
+    );
+  }
+  return (
+    symbol +
+    Number(amount).toFixed(2)
+  );
+}
+// ==========================================
+// INCOME
+// ==========================================
+function saveIncome() {
+  const amount =
+    Number(
+      document.getElementById(
+        "incomeInput"
+      ).value
+    );
+  const currency =
+    document.getElementById(
+      "incomeCurrency"
+    ).value;
+  if (amount <= 0) {
+    alert(t("validIncome"));
+    return;
+  }
+  income = {
+    amount: amount,
+    currency: currency
+  };
+  localStorage.setItem(
+    "incomeData",
+    JSON.stringify(income)
+  );
+  document.getElementById(
+    "incomeInput"
+  ).value = "";
+  update();
+}
+// ==========================================
+// MONTHLY EXPENSE
+// ==========================================
+function addFixedExpense() {
+  const name =
+    document.getElementById(
+      "fixedName"
+    ).value.trim();
+  const amount =
+    Number(
+      document.getElementById(
+        "fixedAmount"
+      ).value
+    );
+  const currency =
+    document.getElementById(
+      "fixedCurrency"
+    ).value;
+  const category =
+    document.getElementById(
+      "fixedCategory"
+    ).value;
+  if (!name || amount <= 0) {
+    alert(t("validMonthly"));
+    return;
+  }
+  fixedExpenses.push({
+    id: Date.now(),
+    name: name,
+    amount: amount,
+    currency: currency,
+    category: category
+  });
+  localStorage.setItem(
+    "fixedExpenses",
+    JSON.stringify(
+      fixedExpenses
+    )
+  );
+  document.getElementById(
+    "fixedName"
+  ).value = "";
+  document.getElementById(
+    "fixedAmount"
+  ).value = "";
+  update();
+}
+function deleteFixed(id) {
+  fixedExpenses =
+    fixedExpenses.filter(
+      item => item.id !== id
+    );
+  localStorage.setItem(
+    "fixedExpenses",
+    JSON.stringify(
+      fixedExpenses
+    )
+  );
+  update();
+}
+// ==========================================
+// DAILY EXPENSE
+// ==========================================
+function addExpense() {
+  const amount =
+    Number(
+      document.getElementById(
+        "expenseAmount"
+      ).value
+    );
+  const currency =
+    document.getElementById(
+      "expenseCurrency"
+    ).value;
+  const category =
+    document.getElementById(
+      "expenseCategory"
+    ).value;
+  const note =
+    document.getElementById(
+      "expenseNote"
+    ).value.trim();
+  if (amount <= 0) {
+    alert(t("validExpense"));
+    return;
+  }
+  dailyExpenses.unshift({
+    id: Date.now(),
+    amount: amount,
+    currency: currency,
+    category: category,
+    note:
+      note ||
+      (
+        language === "ar"
+          ? "مصروف يومي"
+          : "Daily Expense"
+      ),
+    date:
+      new Date().toLocaleDateString(
+        language === "ar"
+          ? "ar-LB"
+          : "en-US",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        }
+      )
+  });
+  localStorage.setItem(
+    "dailyExpenses",
+    JSON.stringify(
+      dailyExpenses
+    )
+  );
+  document.getElementById(
+    "expenseAmount"
+  ).value = "";
+  document.getElementById(
+    "expenseNote"
+  ).value = "";
+  update();
+}
+function deleteExpense(id) {
+  dailyExpenses =
+    dailyExpenses.filter(
+      item => item.id !== id
+    );
+  localStorage.setItem(
+    "dailyExpenses",
+    JSON.stringify(
+      dailyExpenses
+    )
+  );
+  update();
+}
+function clearDailyExpenses() {
+  if (!dailyExpenses.length) {
+    return;
+  }
+  if (
+    !confirm(
+      t("clearConfirm")
+    )
+  ) {
+    return;
+  }
+  dailyExpenses = [];
+  localStorage.setItem(
+    "dailyExpenses",
+    JSON.stringify(
+      dailyExpenses
+    )
+  );
+  update();
+}
+// ==========================================
+// TOTALS
+// ==========================================
+function totalBase(list) {
+  return list.reduce(
+    (total, item) => {
+      return (
+        total +
+        toBase(
+          item.amount,
+          item.currency
+        )
+      );
+    },
+    0
+  );
+}
+// ==========================================
+// DASHBOARD
+// ==========================================
+function updateDashboard() {
+  let incomeBase = 0;
+  if (income) {
+    incomeBase =
+      toBase(
+        income.amount,
+        income.currency
+      );
+  }
+  const fixedBase =
+    totalBase(
+      fixedExpenses
+    );
+  const dailyBase =
+    totalBase(
+      dailyExpenses
+    );
+  const balance =
+    incomeBase -
+    fixedBase -
+    dailyBase;
+  const base =
+    settings.baseCurrency;
+  document.getElementById(
+    "income"
+  ).innerText =
+    formatMoney(
+      incomeBase,
+      base
+    );
+  document.getElementById(
+    "fixed"
+  ).innerText =
+    formatMoney(
+      fixedBase,
+      base
+    );
+  document.getElementById(
+    "daily"
+  ).innerText =
+    formatMoney(
+      dailyBase,
+      base
+    );
+  document.getElementById(
+    "balance"
+  ).innerText =
+    formatMoney(
+      balance,
+      base
+    );
+  document.getElementById(
+    "baseLabel"
+  ).innerText =
+    t("baseCurrencyText") +
+    " " +
+    base;
+  checkBudget(
+    balance,
+    incomeBase
+  );
+}
+// ==========================================
+// BUDGET WARNING
+// ==========================================
+function checkBudget(
+  balance,
+  incomeAmount
+) {
+  const warning =
+    document.getElementById(
+      "warning"
+    );
+  const success =
+    document.getElementById(
+      "success"
+    );
+  warning.style.display = "none";
+  success.style.display = "none";
+  if (!incomeAmount) {
+    return;
+  }
+  if (balance < 0) {
+    warning.innerText =
+      t("overBudget");
+    warning.style.display =
+      "block";
+  }
+  else if (
+    balance <=
+    incomeAmount * 0.15
+  ) {
+    warning.innerText =
+      t("lowBudget");
+    warning.style.display =
+      "block";
+  }
+  else {
+    success.innerText =
+      t("goodBudget");
+    success.style.display =
+      "block";
+  }
+}
+// ==========================================
+// RENDER MONTHLY
+// ==========================================
+function renderFixed() {
+  const container =
+    document.getElementById(
+      "fixedList"
+    );
+  if (!fixedExpenses.length) {
+    container.innerHTML =
+      `<div class="empty">
+        ${t("noMonthly")}
+      </div>`;
+    return;
+  }
+  container.innerHTML =
+    fixedExpenses.map(
+      item => `
+      <div class="item">
+        <div class="item-left">
+          <div class="icon">
+            ${item.category}
+          </div>
+          <div>
+            <div class="name">
+              ${escapeHTML(item.name)}
+            </div>
+            <div class="small">
+              ${item.currency}
+            </div>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div class="amount blue">
+            ${formatMoney(
+              item.amount,
+              item.currency
+            )}
+          </div>
+          <button
+            class="delete"
+            onclick="deleteFixed(${item.id})"
+          >
+            ${t("delete")}
+          </button>
+        </div>
+      </div>
+    `
+    ).join("");
+}
+// ==========================================
+// RENDER DAILY
+// ==========================================
+function renderDaily() {
+  const container =
+    document.getElementById(
+      "expenseList"
+    );
+  if (!dailyExpenses.length) {
+    container.innerHTML =
+      `<div class="empty">
+        ${t("noDaily")}
+      </div>`;
+    return;
+  }
+  container.innerHTML =
+    dailyExpenses.map(
+      item => `
+      <div class="transaction">
+        <div class="item-left">
+          <div class="icon">
+            ${item.category}
+          </div>
+          <div>
+            <div class="name">
+              ${escapeHTML(item.note)}
+            </div>
+            <div class="small">
+              ${item.date}
+              •
+              ${item.currency}
+            </div>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div class="amount red">
+            -
+            ${formatMoney(
+              item.amount,
+              item.currency
+            )}
+          </div>
+          <button
+            class="delete"
+            onclick="deleteExpense(${item.id})"
+          >
+            ${t("delete")}
+          </button>
+        </div>
+      </div>
+    `
+    ).join("");
+}
+// ==========================================
+// SECURITY
+// ==========================================
+function escapeHTML(text) {
+  return String(text)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+// ==========================================
+// SCROLL SETTINGS
+// ==========================================
+function scrollToSettings() {
+  document.getElementById(
+    "settings"
+  ).scrollIntoView({
+    behavior: "smooth"
+  });
+}
+// ==========================================
+// UPDATE
+// ==========================================
+function update() {
+  updateDashboard();
+  renderFixed();
+  renderDaily();
+}
+// ==========================================
+// START
+// ==========================================
+loadSettings();
+applyLanguage();
+update();
+</script>
+</body>
+</html>
