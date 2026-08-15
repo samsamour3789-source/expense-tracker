@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="متتبع المصاريف - إدارة الدخل والمصاريف والميزانية">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <link rel="stylesheet" href="style.css">
+
+  <title>متتبع المصاريف</title>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="brand">
+    <img src="icon-192.png" alt="Expense Tracker">
+
+    <div>
+      <h1>متتبع المصاريف</h1>
+      <span>EXPENSE TRACKER</span>
+    </div>
+  </div>
+
+  <button id="installBtn" class="gold-btn hidden">
+    📲 تثبيت التطبيق
+  </button>
+
+</header>
+
+
+<main class="container">
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div>
+
+      <p class="eyebrow">
+        SMART MONEY CONTROL
+      </p>
+
+      <h2>
+        سيطر على مصاريفك بسهولة.
+      </h2>
+
+      <p>
+        أضف دخلك ومصاريفك وشاهد الرصيد
+        والمصاريف اليومية بشكل فوري.
+      </p>
+
+    </div>
+
+    <div class="hero-badge">
+      💰
+    </div>
+
+  </section>
+
+
+  <!-- STATS -->
+
+  <section class="stats">
+
+    <article class="card balance">
+
+      <span>
+        الرصيد الحالي
+      </span>
+
+      <strong id="balance">
+        $0.00
+      </strong>
+
+    </article>
+
+
+    <article class="card income">
+
+      <span>
+        إجمالي الدخل
+      </span>
+
+      <strong id="income">
+        $0.00
+      </strong>
+
+    </article>
+
+
+    <article class="card expense">
+
+      <span>
+        إجمالي المصاريف
+      </span>
+
+      <strong id="expense">
+        $0.00
+      </strong>
+
+    </article>
+
+  </section>
+
+
+  <!-- FORMS -->
+
+  <section class="grid">
+
+
+    <!-- ADD TRANSACTION -->
+
+    <div class="card">
+
+      <div class="section-title">
+
+        <h3>
+          إضافة عملية
+        </h3>
+
+        <span>
+          ＋
+        </span>
+
+      </div>
+
+
+      <form id="transactionForm">
+
+
+        <label for="type">
+          النوع
+        </label>
+
+        <select id="type">
+
+          <option value="expense">
+            مصروف
+          </option>
+
+          <option value="income">
+            دخل
+          </option>
+
+        </select>
+
+
+        <label for="description">
+          الوصف
+        </label>
+
+        <input
+          id="description"
+          type="text"
+          placeholder="مثال: بنزين"
+          required
+        >
+
+
+        <label for="amount">
+          المبلغ
+        </label>
+
+        <input
+          id="amount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="0.00"
+          required
+        >
+
+
+        <label for="date">
+          التاريخ
+        </label>
+
+        <input
+          id="date"
+          type="date"
+          required
+        >
+
+
+        <button
+          class="primary-btn"
+          type="submit"
+        >
+          💾 حفظ العملية
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- BUDGET -->
+
+    <div class="card">
+
+      <div class="section-title">
+
+        <h3>
+          الميزانية الشهرية
+        </h3>
+
+        <span>
+          🎯
+        </span>
+
+      </div>
+
+
+      <label for="budget">
+        حدد الميزانية
+      </label>
+
+
+      <div class="budget-row">
+
+        <input
+          id="budget"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="مثال: 1000"
+        >
+
+        <button
+          id="saveBudget"
+          class="gold-btn"
+        >
+          حفظ
+        </button>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div id="progressBar"></div>
+
+      </div>
+
+
+      <p
+        id="budgetText"
+        class="muted"
+      >
+        لم يتم تحديد ميزانية بعد.
+      </p>
+
+
+      <div
+        id="alertBox"
+        class="alert hidden"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- TRANSACTIONS -->
+
+  <section class="card">
+
+    <div class="section-title">
+
+      <h3>
+        آخر العمليات
+      </h3>
+
+      <button
+        id="clearAll"
+        class="danger-btn"
+      >
+        حذف الكل
+      </button>
+
+    </div>
+
+
+    <div
+      id="transactions"
+      class="transactions"
+    ></div>
+
+
+    <p
+      id="empty"
+      class="empty"
+    >
+      لا توجد عمليات بعد.
+    </p>
+
+  </section>
+
+</main>
+
+
+<footer>
+
+  Expense Tracker
+  <br>
+
+  <span>
+    Black • Red • Gold
+  </span>
+
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
