@@ -1,11 +1,50 @@
 const STORAGE_KEY = "masrofiData";
 
-let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-  income: 0,
-  incomeCurrency: "USD",
-  budget: 0,
-  expenses: []
-};
+function getMonthKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function createMonthData() {
+  return {
+    income: 0,
+    incomeCurrency: "USD",
+    budget: 0,
+    expenses: []
+  };
+}
+
+let allData =
+  JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+    months: {}
+  };
+
+// Compatibility with the old version
+if (!allData.months) {
+  const oldData = allData;
+
+  allData = {
+    months: {
+      [getMonthKey()]: {
+        income: oldData.income || 0,
+        incomeCurrency: oldData.incomeCurrency || "USD",
+        budget: oldData.budget || 0,
+        expenses: oldData.expenses || []
+      }
+    }
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+}
+
+const currentMonthKey = getMonthKey();
+
+if (!allData.months[currentMonthKey]) {
+  allData.months[currentMonthKey] = createMonthData();
+}
+
+let data = allData.months[currentMonthKey];
 
 const incomeInput = document.getElementById("incomeInput");
 const incomeCurrency = document.getElementById("incomeCurrency");
@@ -29,7 +68,8 @@ const budgetProgress = document.getElementById("budgetProgress");
 const budgetMessage = document.getElementById("budgetMessage");
 
 function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  allData.months[currentMonthKey] = data;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
 }
 
 function formatMoney(amount) {
@@ -48,7 +88,9 @@ function updateDashboard() {
 
   incomeTotal.textContent = formatMoney(data.income);
   dailyTotal.textContent = formatMoney(totalExpenses);
+
   fixedTotal.textContent = "$0.00";
+
   remainingBalance.textContent = formatMoney(remaining);
 
   if (remaining < 0) {
@@ -108,6 +150,7 @@ function renderTransactions() {
 
     item.innerHTML = `
       <div class="transaction-info">
+
         <div class="transaction-category">
           ${escapeHTML(expense.category)}
         </div>
@@ -119,6 +162,7 @@ function renderTransactions() {
         <div class="transaction-date">
           ${escapeHTML(expense.date)}
         </div>
+
       </div>
 
       <div class="transaction-amount">
