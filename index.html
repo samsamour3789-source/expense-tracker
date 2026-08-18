@@ -1,986 +1,2196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#080808">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<title>Masrofi 2.0</title>
+<meta name="apple-mobile-web-app-title" content="مصروفي">
+<link rel="manifest" href="./manifest.json">
+<title>مصروفي 3.0</title>
 
 <style>
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif
 }
-
-:root{
-    --black:#080808;
-    --card:#121212;
-    --card2:#181818;
-    --red:#e50914;
-    --gold:#d4af37;
-    --white:#ffffff;
-    --gray:#999;
-    --green:#27d17f;
-}
-
+html{scroll-behavior:smooth}
 body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:
-        radial-gradient(circle at top right,#250000 0,#080808 35%),
-        #080808;
-    color:white;
-    min-height:100vh;
+  margin:0;
+  background:#181818;
+  color:#fff;
+  overflow-x:hidden
 }
-
 .container{
-    width:min(1100px,94%);
-    margin:auto;
-    padding:20px 0 40px;
+  width:100%;
+  max-width:680px;
+  margin:auto;
+  padding:18px 14px 50px
 }
-
-/* HEADER */
-
-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:25px;
-}
-
-.logo{
-    font-size:28px;
-    font-weight:900;
-    letter-spacing:1px;
-}
-
-.logo span{
-    color:var(--red);
-}
-
-.subtitle{
-    color:var(--gray);
-    font-size:13px;
-    margin-top:4px;
-}
-
-.settings{
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    background:var(--card);
-    border:1px solid #292929;
-    color:white;
-    font-size:20px;
-}
-
-/* BALANCE */
-
-.balance-card{
-    background:
-        linear-gradient(135deg,#191919,#0d0d0d);
-    border:1px solid #292929;
-    border-radius:24px;
-    padding:25px;
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 15px 40px rgba(0,0,0,.4);
-}
-
-.balance-card:after{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    background:var(--red);
-    opacity:.08;
-    border-radius:50%;
-    right:-70px;
-    top:-70px;
-}
-
-.small-title{
-    color:#aaa;
-    font-size:13px;
-}
-
-.balance{
-    font-size:42px;
-    font-weight:900;
-    margin:8px 0;
-}
-
-.balance.gold{
-    color:var(--gold);
-}
-
-.balance-info{
-    color:#aaa;
-    font-size:13px;
-}
-
-/* STATS */
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:14px;
-    margin:18px 0;
-}
-
-.stat{
-    background:var(--card);
-    border:1px solid #252525;
-    border-radius:18px;
-    padding:18px;
-}
-
-.stat-title{
-    color:#999;
-    font-size:12px;
-}
-
-.stat-value{
-    font-size:24px;
-    font-weight:bold;
-    margin-top:8px;
-}
-
-.income{
-    color:var(--green);
-}
-
-.expense{
-    color:var(--red);
-}
-
-/* GRID */
-
-.grid{
-    display:grid;
-    grid-template-columns:1.3fr .7fr;
-    gap:18px;
-}
+h1{text-align:center;font-size:30px;margin:8px 0}
+h2{font-size:20px;margin:0 0 14px}
+h3{margin:18px 0 8px}
+.subtitle{text-align:center;color:#888;margin-bottom:18px}
 
 .card{
-    background:var(--card);
-    border:1px solid #252525;
-    border-radius:20px;
-    padding:20px;
-    margin-bottom:18px;
+  background:#111;
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 5px 18px #0005;
+  animation:cardIn .45s ease both;
+  overflow:hidden
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
-.card h2{
-    font-size:18px;
-    margin-bottom:18px;
+.top{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:15px
 }
 
-.card-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+button,input,select{
+  width:100%;
+  min-height:48px;
+  padding:13px 14px;
+  border-radius:13px;
+  border:1px solid #333;
+  background:#111;
+  color:#fff;
+  font-size:16px;
+  margin-bottom:10px;
+  outline:none
 }
-
-.card-title span{
-    color:var(--gray);
-    font-size:12px;
+input:focus,select:focus{
+  border-color:#d71920;
+  box-shadow:0 0 0 2px #d7192030
 }
+button{
+  background:#d71920;
+  border:0;
+  font-weight:700;
+  cursor:pointer;
+  transition:.18s
+}
+button:active{transform:scale(.97)}
+.secondary{background:#eee;color:#111}
+.goldBtn{background:#b38b18}
+.blueBtn{background:#2459a8}
+.greenBtn{background:#148c49}
 
-/* BUDGET */
+.balance{text-align:center}
+.balance-number{
+  font-size:40px;
+  font-weight:900;
+  margin:5px;
+  letter-spacing:-1px
+}
+.small{font-size:12px;color:#888}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:15px
+}
+.stat{
+  background:#181818;
+  border-radius:14px;
+  padding:14px 7px;
+  min-width:0
+}
+.stat-title{font-size:12px;color:#888}
+.stat-value{
+  font-weight:800;
+  margin-top:5px;
+  font-size:16px;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+.green{color:#20d06b}
+.red{color:#ff4b4b}
+.blue{color:#5797ff}
+.gold{color:#f5c542}
+
+.box{
+  background:#181818;
+  border-radius:15px;
+  padding:14px;
+  margin-top:10px;
+  overflow:hidden
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:9px 0
+}
+.row span{color:#ccc}
+.row strong{white-space:nowrap}
+.big{font-size:26px;font-weight:800;margin:5px 0}
 
 .progress{
-    height:13px;
-    background:#292929;
-    border-radius:20px;
-    overflow:hidden;
-    margin:15px 0;
+  height:10px;
+  background:#333;
+  border-radius:20px;
+  overflow:hidden;
+  margin:10px 0
+}
+.bar{
+  height:100%;
+  width:0;
+  border-radius:20px;
+  background:#d71920;
+  transition:width .7s ease
+}
+.savebar{background:#20d06b}
+
+.warning,.success,.smart{
+  padding:12px;
+  border-radius:13px;
+  margin-top:12px;
+  display:none
+}
+.warning{background:#3b2d00;color:#ffd85a}
+.success{background:#0d321d;color:#58e58a}
+.smart{
+  display:block;
+  background:#191d2d;
+  border:1px solid #293653;
+  color:#9ebcff
 }
 
-.progress-bar{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,var(--red),var(--gold));
-    border-radius:20px;
-    transition:.4s;
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid #292929
 }
-
-.budget-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:13px;
-    color:#aaa;
+.left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  flex:1
 }
-
-.budget-row strong{
-    color:white;
-}
-
-/* EXPENSES */
-
-.expense-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 0;
-    border-bottom:1px solid #242424;
-}
-
-.expense-item:last-child{
-    border-bottom:0;
-}
-
-.expense-left{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
 .icon{
-    width:42px;
-    height:42px;
-    display:grid;
-    place-items:center;
-    border-radius:13px;
-    background:#1d1d1d;
-    font-size:20px;
+  width:42px;
+  height:42px;
+  min-width:42px;
+  border-radius:12px;
+  background:#222;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px
+}
+.name{font-weight:700;word-break:break-word}
+.amount{font-weight:800;white-space:nowrap;text-align:right}
+.item>div:last-child{
+  flex-shrink:0;
+  text-align:right;
+  max-width:50%
 }
 
-.expense-name{
-    font-weight:bold;
-    font-size:14px;
+.smallbtn{
+  width:auto;
+  min-height:34px;
+  padding:7px 10px;
+  font-size:12px;
+  margin:5px 2px 0
+}
+.edit{background:#17263e;color:#6fa4ff}
+.delete{background:#401719;color:#ff6969}
+.empty{text-align:center;color:#888;padding:18px 10px}
+
+.months{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px
+}
+.months button{margin:0}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px
+}
+.section-head h2{margin:0}
+
+.calendar-head{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+  margin-bottom:5px
+}
+.calendar-head div{
+  text-align:center;
+  color:#777;
+  font-size:11px;
+  padding:5px 0
+}
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px
+}
+.day{
+  min-height:54px;
+  background:#181818;
+  border-radius:9px;
+  padding:5px;
+  position:relative;
+  cursor:pointer;
+  border:1px solid transparent
+}
+.day:hover{border-color:#444}
+.day.emptyday{background:transparent;cursor:default}
+.day.today{border-color:#d71920}
+.day-number{font-size:12px}
+.day-total{
+  font-size:9px;
+  color:#ff5b5b;
+  margin-top:6px;
+  white-space:nowrap;
+  overflow:hidden
 }
 
-.expense-date{
-    color:#777;
-    font-size:11px;
-    margin-top:3px;
+.chart{
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+  height:160px;
+  padding:10px 3px;
+  overflow-x:auto
+}
+.chart-col{
+  min-width:34px;
+  height:140px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center
+}
+.chart-bar{
+  width:24px;
+  min-height:3px;
+  background:#d71920;
+  border-radius:7px 7px 2px 2px
+}
+.chart-label{font-size:9px;color:#777;margin-top:5px}
+
+.category-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:9px 0
+}
+.category-row .cat-name{
+  width:105px;
+  font-size:12px
+}
+.category-track{
+  flex:1;
+  height:9px;
+  background:#292929;
+  border-radius:20px;
+  overflow:hidden
+}
+.category-fill{
+  height:100%;
+  background:#d71920;
+  border-radius:20px
+}
+.category-money{
+  width:75px;
+  text-align:right;
+  font-size:12px
 }
 
-.expense-amount{
-    color:var(--red);
-    font-weight:bold;
+.account{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#181818;
+  border-radius:15px;
+  padding:14px;
+  margin:8px 0
 }
 
-/* GOAL */
-
-.goal-box{
-    text-align:center;
-}
-
-.goal-icon{
-    font-size:42px;
-    margin-bottom:8px;
-}
-
-.goal-name{
-    font-weight:bold;
-}
-
-.goal-money{
-    color:#aaa;
-    font-size:13px;
-    margin:7px 0;
-}
-
-.goal-progress{
-    height:10px;
-    background:#292929;
-    border-radius:20px;
-    overflow:hidden;
-    margin:15px 0 8px;
-}
-
-.goal-bar{
-    height:100%;
-    width:60%;
-    background:var(--gold);
-    border-radius:20px;
-}
-
-/* BUTTON */
-
-.add-btn{
-    width:100%;
-    padding:16px;
-    border:0;
-    border-radius:16px;
-    background:linear-gradient(135deg,var(--red),#a50009);
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:0 8px 25px rgba(229,9,20,.25);
-}
-
-.add-btn:active{
-    transform:scale(.98);
-}
-
-/* ALERT */
-
-.alert{
-    padding:14px;
-    border-radius:14px;
-    background:#251900;
-    border:1px solid #604c00;
-    color:#e7ca62;
-    font-size:13px;
-    margin-top:15px;
-    display:none;
-}
-
-/* MODAL */
+.account-name{font-weight:700}
+.account-balance{color:#20d06b;font-weight:800}
 
 .modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.8);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:100;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000a;
+  padding:20px;
+  z-index:50;
+  overflow-y:auto
+}
+.modalbox{
+  width:100%;
+  max-width:500px;
+  margin:50px auto;
+  background:#111;
+  padding:20px;
+  border-radius:20px;
+  box-shadow:0 15px 50px #000
 }
 
-.modal-box{
-    width:min(450px,100%);
-    background:#151515;
-    border:1px solid #333;
-    border-radius:22px;
-    padding:22px;
-}
+.rtl{direction:rtl}
 
-.modal-box h2{
-    margin-bottom:18px;
+@media(max-width:500px){
+  .container{padding:14px 10px 30px}
+  .card{padding:15px;border-radius:18px}
+  .balance-number{font-size:35px}
+  .big{font-size:23px}
 }
-
-input,select{
-    width:100%;
-    padding:14px;
-    margin-bottom:12px;
-    background:#0d0d0d;
-    color:white;
-    border:1px solid #333;
-    border-radius:12px;
-    outline:none;
-}
-
-input:focus,select:focus{
-    border-color:var(--red);
-}
-
-.modal-buttons{
+@media(max-width:400px){
+  .stats{grid-template-columns:1fr}
+  .stat{
     display:flex;
-    gap:10px;
-}
-
-.modal-buttons button{
-    flex:1;
-}
-
-.cancel{
-    background:#292929;
-    color:white;
-}
-
-/* FOOTER */
-
-footer{
-    text-align:center;
-    color:#555;
-    font-size:11px;
-    margin-top:10px;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-    .container{
-        width:92%;
-        padding-top:15px;
-    }
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-    .grid{
-        grid-template-columns:1fr;
-        gap:0;
-    }
-
-    .balance{
-        font-size:36px;
-    }
-
-    .logo{
-        font-size:25px;
-    }
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 14px
+  }
+  .stat-value{margin:0}
 }
 </style>
 </head>
 
-<body>
+<body class="rtl">
 
 <div class="container">
 
-<header>
+<h1 id="title">💰 مصروفي</h1>
+<div class="subtitle" id="subtitle">إدارة ذكية لمصروفك وتوفيرك</div>
 
-<div>
-    <div class="logo">MAS<span>ROFI</span></div>
-    <div class="subtitle">Your Money Dashboard</div>
+<div class="top">
+<button onclick="toggleLanguage()" id="langBtn">🇬🇧 English</button>
+<button class="secondary"
+onclick="document.getElementById('settings').scrollIntoView({behavior:'smooth'})"
+id="settingsBtn">⚙️ الإعدادات</button>
 </div>
 
-<button class="settings" onclick="alert('Settings coming soon ⚙️')">
-    ⚙️
-</button>
+<!-- MONTH -->
 
-</header>
+<div class="card">
+<h2 id="monthTitle">📅 الشهر</h2>
 
+<select id="month" onchange="changeMonth()"></select>
 
-<!-- BALANCE -->
-
-<section class="balance-card">
-
-<div class="small-title">
-    Available Balance
+<div class="months">
+<button class="secondary" onclick="moveMonth(-1)" id="prev">⬅️ السابق</button>
+<button class="secondary" onclick="moveMonth(1)" id="next">التالي ➡️</button>
+</div>
 </div>
 
-<div class="balance gold" id="balance">
-    $1,250.00
-</div>
+<!-- DASHBOARD -->
 
-<div class="balance-info">
-    Updated just now
-</div>
+<div class="card balance">
 
-</section>
+<div class="small" id="balanceTitle">الرصيد المتبقي</div>
+<div class="balance-number" id="balance">$0.00</div>
+<div class="small" id="currencyText">العملة الأساسية: USD</div>
 
-
-<!-- STATS -->
-
-<section class="stats">
+<div class="stats">
 
 <div class="stat">
-    <div class="stat-title">INCOME</div>
-    <div class="stat-value income" id="income">
-        $2,000
-    </div>
+<div class="stat-title" id="incomeLabel">المدخول</div>
+<div class="stat-value green" id="income">$0</div>
 </div>
 
 <div class="stat">
-    <div class="stat-title">EXPENSES</div>
-    <div class="stat-value expense" id="expenses">
-        $750
-    </div>
+<div class="stat-title" id="fixedLabel">الثابت</div>
+<div class="stat-value blue" id="fixed">$0</div>
 </div>
 
 <div class="stat">
-    <div class="stat-title">THIS MONTH</div>
-    <div class="stat-value" id="monthly">
-        $750
-    </div>
+<div class="stat-title" id="spentLabel1">المصروف</div>
+<div class="stat-value red" id="spent">$0</div>
 </div>
 
-</section>
+</div>
 
+<div class="warning" id="warning"></div>
+<div class="success" id="success"></div>
 
-<div class="grid">
-
-<main>
+</div>
 
 <!-- BUDGET -->
 
-<section class="card">
+<div class="card">
+<h2 id="budgetDashboardTitle">🎯 ميزانية المصروف والتوفير</h2>
 
-<div class="card-title">
-    <h2>📊 Monthly Budget</h2>
-    <span id="percentage">75%</span>
+<div class="box">
+<div class="small" id="budgetLabel">ميزانية المصروف الشهري</div>
+<div class="big blue" id="budgetValue">$0</div>
+
+<div class="row">
+<span id="spentSoFar">المصروف حتى الآن</span>
+<strong class="red" id="spentValue">$0</strong>
+</div>
+
+<div class="row">
+<span id="remainingBudget">المتبقي للمصروف</span>
+<strong class="gold" id="remainingValue">$0</strong>
 </div>
 
 <div class="progress">
-    <div class="progress-bar" id="budgetBar"></div>
+<div class="bar" id="budgetBar"></div>
 </div>
 
-<div class="budget-row">
-    <span>Spent</span>
-    <strong id="spent">$750</strong>
+<div class="small" id="budgetPercent">0%</div>
 </div>
 
-<div class="budget-row">
-    <span>Budget</span>
-    <strong id="budget">$1,000</strong>
+<div class="box">
+<div class="small" id="goalLabel">🎯 هدف التوفير</div>
+<div class="big green" id="goalValue">$0</div>
+
+<div class="row">
+<span id="currentSavingsLabel">التوفير الحالي</span>
+<strong class="green" id="savingsValue">$0</strong>
 </div>
 
-<div class="budget-row">
-    <span>Remaining</span>
-    <strong id="remaining">$250</strong>
+<div class="progress">
+<div class="bar savebar" id="savingBar"></div>
 </div>
 
-<div class="alert" id="budgetAlert">
-    ⚠️ You are getting close to your monthly budget.
-</div>
-
-</section>
-
-
-<!-- TODAY -->
-
-<section class="card">
-
-<div class="card-title">
-    <h2>🔥 Today's Expenses</h2>
-    <span id="todayTotal">$50</span>
-</div>
-
-<div id="expenseList">
-
-<div class="expense-item">
-
-<div class="expense-left">
-<div class="icon">🍔</div>
-
-<div>
-<div class="expense-name">Food</div>
-<div class="expense-date">Today • 12:30 PM</div>
+<div class="small" id="savingPercent">0%</div>
 </div>
 </div>
 
-<div class="expense-amount">-$15</div>
+<!-- REPORT -->
 
+<div class="card">
+<h2 id="reportTitle">📊 تقرير الشهر</h2>
+
+<div class="box">
+
+<div class="row">
+<span id="rIncomeLabel">المدخول</span>
+<strong class="green" id="rIncome">$0</strong>
 </div>
 
-
-<div class="expense-item">
-
-<div class="expense-left">
-<div class="icon">🚕</div>
-
-<div>
-<div class="expense-name">Transport</div>
-<div class="expense-date">Today • 3:15 PM</div>
-</div>
+<div class="row">
+<span id="rFixedLabel">المصاريف الثابتة</span>
+<strong class="blue" id="rFixed">$0</strong>
 </div>
 
-<div class="expense-amount">-$10</div>
-
+<div class="row">
+<span id="rDailyLabel">المصاريف اليومية</span>
+<strong class="red" id="rDaily">$0</strong>
 </div>
 
-
-<div class="expense-item">
-
-<div class="expense-left">
-<div class="icon">🛒</div>
-
-<div>
-<div class="expense-name">Shopping</div>
-<div class="expense-date">Today • 6:20 PM</div>
-</div>
+<div class="row">
+<span id="rTotalLabel">إجمالي المصاريف</span>
+<strong class="red" id="rTotal">$0</strong>
 </div>
 
-<div class="expense-amount">-$25</div>
-
+<div class="row">
+<span id="rBalanceLabel">الرصيد المتبقي</span>
+<strong id="rBalance">$0</strong>
 </div>
 
-</div>
-
-</section>
-
-</main>
-
-
-<aside>
-
-<!-- GOAL -->
-
-<section class="card">
-
-<h2>🎯 Saving Goal</h2>
-
-<div class="goal-box">
-
-<div class="goal-icon">📱</div>
-
-<div class="goal-name">
-New Phone
-</div>
-
-<div class="goal-money">
-$300 / $500
-</div>
-
-<div class="goal-progress">
-<div class="goal-bar"></div>
-</div>
-
-<div style="color:#aaa;font-size:12px;">
-60% completed
+<div class="row">
+<span id="rSavingsLabel">💵 التوفير الحالي</span>
+<strong class="green" id="rSavings">$0</strong>
 </div>
 
 </div>
+</div>
 
-</section>
+<!-- SMART SPENDING -->
 
+<div class="card">
+<h2 id="smartTitle">🧠 الإنفاق الذكي</h2>
 
-<!-- QUICK ACTION -->
+<div class="smart" id="smartMessage">
+تحليل مصروفك سيظهر هنا.
+</div>
 
-<section class="card">
+<div class="box">
+<div class="row">
+<span id="dailyAverageLabel">متوسط المصروف اليومي</span>
+<strong id="dailyAverage">$0</strong>
+</div>
 
-<h2>⚡ Quick Action</h2>
+<div class="row">
+<span id="largestLabel">أكبر مصروف</span>
+<strong class="red" id="largestExpense">$0</strong>
+</div>
 
-<button class="add-btn" onclick="openModal()">
-+ ADD EXPENSE
+<div class="row">
+<span id="daysLeftLabel">الأيام المتبقية</span>
+<strong id="daysLeft">0</strong>
+</div>
+</div>
+</div>
+
+<!-- CALENDAR -->
+
+<div class="card">
+<h2 id="calendarTitle">📅 Calendar</h2>
+
+<div class="calendar-head">
+<div>Sun</div><div>Mon</div><div>Tue</div>
+<div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+</div>
+
+<div class="calendar" id="calendar"></div>
+
+<div class="small" id="calendarHint">
+اضغط على يوم لرؤية مصاريفه
+</div>
+</div>
+
+<!-- ADVANCED REPORT -->
+
+<div class="card">
+<h2 id="advancedTitle">📈 التحليل المتقدم</h2>
+
+<div class="small" id="categoryTitle">المصاريف حسب التصنيف</div>
+<div id="categoryReport"></div>
+
+<h3 id="dailyChartTitle">المصروف خلال الشهر</h3>
+<div class="chart" id="dailyChart"></div>
+</div>
+
+<!-- ACCOUNTS -->
+
+<div class="card">
+<h2 id="accountsTitle">👤 الحسابات</h2>
+
+<input id="accountName" placeholder="اسم الحساب">
+<input id="accountAmount" type="number" placeholder="الرصيد">
+
+<select id="accountCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<button class="blueBtn" onclick="addAccount()" id="addAccountBtn">
+إضافة حساب
 </button>
 
-</section>
+<div id="accountsList"></div>
+</div>
 
-</aside>
+<!-- BACKUP -->
+
+<div class="card">
+<h2 id="backupTitle">💾 Backup & Restore</h2>
+
+<div class="small" id="backupHelp">
+احفظ نسخة من بيانات مصروفي أو استعد نسخة قديمة.
+</div>
+
+<button class="greenBtn" onclick="backupData()" id="backupBtn">
+💾 Backup
+</button>
+
+<input type="file" id="restoreFile" accept=".json"
+onchange="restoreData(event)">
+
+<button class="delete" onclick="resetAll()" id="resetBtn">
+🗑️ Reset All Data
+</button>
+</div>
+
+<!-- SETTINGS -->
+
+<div class="card" id="settings">
+
+<h2 id="settingsTitle">⚙️ الإعدادات</h2>
+
+<label id="baseLabel">العملة الأساسية</label>
+
+<select id="baseCurrency" onchange="changeBase()">
+<option value="USD">🇺🇸 USD — US Dollar</option>
+<option value="LBP">🇱🇧 LBP — Lebanese Pound</option>
+<option value="SYP">🇸🇾 SYP — Syrian Pound</option>
+</select>
+
+<h3 id="ratesTitle">💱 أسعار الصرف</h3>
+
+<div class="small" id="ratesHelp">
+قيمة العملة مقابل 1 دولار أمريكي
+</div>
+
+<input type="number" id="lbp" placeholder="LBP per 1 USD">
+<input type="number" id="syp" placeholder="SYP per 1 USD">
+
+<button onclick="saveRates()" id="ratesBtn">حفظ أسعار الصرف</button>
+</div>
+
+<!-- INCOME -->
+
+<div class="card">
+
+<h2 id="incomeTitle">💵 مدخول الشهر</h2>
+
+<input type="number" id="incomeInput" placeholder="أدخل المدخول">
+
+<select id="incomeCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<button onclick="saveIncome()" id="incomeBtn">حفظ المدخول</button>
+<div class="small" id="incomeSaved"></div>
 
 </div>
 
+<!-- BUDGET -->
 
-<footer>
-MASROFI 2.0 • Personal Expense Tracker
-</footer>
+<div class="card">
+
+<h2 id="budgetTitle">🎯 ميزانية المصروف الشهرية</h2>
+
+<div class="small" id="budgetHelp">
+المبلغ الذي تسمح لنفسك أن تصرفه خلال الشهر.
+</div>
+
+<input type="number" id="budgetInput" placeholder="مثلاً 500">
+
+<select id="budgetCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<button onclick="saveBudget()" id="budgetBtn">حفظ الميزانية</button>
+<div class="small" id="budgetSaved"></div>
 
 </div>
 
+<!-- FIXED -->
 
-<!-- MODAL -->
+<div class="card">
+
+<h2 id="fixedTitle">🏠 المصاريف الثابتة</h2>
+
+<input id="fixedName" placeholder="مثلاً إيجار">
+<input type="number" id="fixedAmount" placeholder="المبلغ">
+
+<select id="fixedCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<select id="fixedCategory">
+<option value="🏠">🏠 Rent</option>
+<option value="⚡">⚡ Electricity</option>
+<option value="💧">💧 Water</option>
+<option value="🌐">🌐 Internet</option>
+<option value="📱">📱 Phone</option>
+<option value="📺">📺 Subscriptions</option>
+<option value="📌">📌 Other</option>
+</select>
+
+<button onclick="addFixed()" id="fixedBtn">
+إضافة مصروف ثابت
+</button>
+
+<div id="fixedList"></div>
+
+</div>
+
+<!-- DAILY -->
+
+<div class="card">
+
+<h2 id="dailyTitle">🛒 المصروف اليومي</h2>
+
+<input type="number" id="dailyAmount" placeholder="المبلغ">
+
+<select id="dailyCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<select id="dailyCategory">
+<option value="🍔">🍔 Food</option>
+<option value="☕">☕ Coffee</option>
+<option value="🚗">🚗 Transportation</option>
+<option value="🛍️">🛍️ Shopping</option>
+<option value="🎉">🎉 Entertainment</option>
+<option value="💊">💊 Health</option>
+<option value="📌">📌 Other</option>
+</select>
+
+<input id="dailyNote" placeholder="مثلاً قهوة">
+
+<button onclick="addDaily()" id="dailyBtn">
+إضافة مصروف
+</button>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="card">
+
+<div class="section-head">
+<h2 id="historyTitle">📋 الحركات</h2>
+
+<button class="delete smallbtn"
+onclick="clearMonth()" id="clearBtn">
+مسح الشهر
+</button>
+</div>
+
+<div id="history"></div>
+
+</div>
+
+</div>
+
+<!-- EDIT MODAL -->
 
 <div class="modal" id="modal">
 
-<div class="modal-box">
+<div class="modalbox">
 
-<h2>➕ Add Expense</h2>
+<h2 id="editTitle">✏️ تعديل المصروف</h2>
 
-<input
-    id="expenseName"
-    type="text"
-    placeholder="Expense name"
->
+<input type="number" id="editAmount">
 
-<input
-    id="expenseAmount"
-    type="number"
-    placeholder="Amount"
->
-
-<select id="expenseCategory">
-
-<option value="🍔">🍔 Food</option>
-<option value="🚕">🚕 Transport</option>
-<option value="🛒">🛒 Shopping</option>
-<option value="🏠">🏠 Home</option>
-<option value="💊">💊 Health</option>
-<option value="🎮">🎮 Entertainment</option>
-<option value="📦">📦 Other</option>
-
+<select id="editCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
 </select>
 
-<div class="modal-buttons">
+<input id="editNote">
 
-<button
-    class="add-btn cancel"
-    onclick="closeModal()">
-    Cancel
-</button>
+<select id="editCategory">
+<option value="🍔">🍔 Food</option>
+<option value="☕">☕ Coffee</option>
+<option value="🚗">🚗 Transportation</option>
+<option value="🛍️">🛍️ Shopping</option>
+<option value="🎉">🎉 Entertainment</option>
+<option value="💊">💊 Health</option>
+<option value="📌">📌 Other</option>
+</select>
 
-<button
-    class="add-btn"
-    onclick="addExpense()">
-    Add
-</button>
-
-</div>
-
-</div>
+<button onclick="saveEdit()" id="saveEditBtn">حفظ</button>
+<button class="secondary" onclick="closeModal()" id="cancelBtn">إلغاء</button>
 
 </div>
-
+</div>
 
 <script>
 
-let totalExpenses = 750;
-let budget = 1000;
-let balance = 1250;
-let income = 2000;
+const T={
+ar:{
+title:"💰 مصروفي",
+subtitle:"إدارة ذكية لمصروفك وتوفيرك",
+lang:"🇬🇧 English",
+settings:"⚙️ الإعدادات",
+month:"📅 الشهر",
+prev:"⬅️ السابق",
+next:"التالي ➡️",
+balance:"الرصيد المتبقي",
+base:"العملة الأساسية:",
+income:"المدخول",
+fixed:"الثابت",
+spent:"المصروف",
+budgetDash:"🎯 ميزانية المصروف والتوفير",
+budget:"ميزانية المصروف الشهري",
+spentSoFar:"المصروف حتى الآن",
+remaining:"المتبقي للمصروف",
+goal:"🎯 هدف التوفير",
+savings:"التوفير الحالي",
+report:"📊 تقرير الشهر",
+total:"إجمالي المصاريف",
+rates:"💱 أسعار الصرف",
+ratesHelp:"قيمة العملة مقابل 1 دولار أمريكي",
+saveRates:"حفظ أسعار الصرف",
+incomeMonth:"💵 مدخول الشهر",
+saveIncome:"حفظ المدخول",
+budgetMonth:"🎯 ميزانية المصروف الشهرية",
+budgetHelp:"المبلغ الذي تسمح لنفسك أن تصرفه خلال الشهر.",
+saveBudget:"حفظ الميزانية",
+fixedTitle:"🏠 المصاريف الثابتة",
+addFixed:"إضافة مصروف ثابت",
+daily:"🛒 المصروف اليومي",
+addDaily:"إضافة مصروف",
+history:"📋 الحركات",
+clear:"مسح الشهر",
+edit:"تعديل",
+del:"حذف",
+valid:"يرجى إدخال مبلغ صحيح.",
+name:"يرجى إدخال اسم ومبلغ صحيح.",
+over:"🚨 تجاوزت ميزانية المصروف!",
+low:"⚠️ اقتربت من حد الميزانية.",
+good:"✅ ممتاز! صرفك تحت السيطرة.",
+confirm:"هل أنت متأكد من مسح هذا الشهر؟",
+smartTitle:"🧠 الإنفاق الذكي",
+calendar:"📅 التقويم",
+calendarHint:"اضغط على يوم لرؤية مصاريفه",
+advanced:"📈 التحليل المتقدم",
+category:"المصاريف حسب التصنيف",
+chart:"المصروف خلال الشهر",
+accounts:"👤 الحسابات",
+addAccount:"إضافة حساب",
+backup:"💾 النسخ الاحتياطي والاستعادة",
+backupHelp:"احفظ نسخة من بيانات مصروفي أو استعد نسخة قديمة.",
+backup:"💾 Backup",
+reset:"🗑️ حذف كل البيانات",
+average:"متوسط المصروف اليومي",
+largest:"أكبر مصروف",
+days:"الأيام المتبقية",
+smartGood:"ممتاز! مصروفك تحت السيطرة.",
+smartWarning:"انتبه! أنت تقترب من ميزانية الشهر.",
+smartOver:"تحذير! لقد تجاوزت ميزانية المصروف.",
+noExpenses:"لا توجد حركات",
+noFixed:"لا توجد مصاريف ثابتة",
+noAccounts:"لا توجد حسابات",
+accountName:"اسم الحساب",
+accountBalance:"الرصيد",
+accountAdded:"تمت إضافة الحساب.",
+accountDelete:"حذف",
+dayExpenses:"مصاريف هذا اليوم"
+},
+en:{
+title:"💰 My Expenses",
+subtitle:"Smart Spending & Savings Manager",
+lang:"🇱🇧 العربية",
+settings:"⚙️ Settings",
+month:"📅 Month",
+prev:"⬅️ Previous",
+next:"Next ➡️",
+balance:"Remaining Balance",
+base:"Base currency:",
+income:"Income",
+fixed:"Fixed",
+spent:"Spent",
+budgetDash:"🎯 Spending Budget & Savings",
+budget:"Monthly Spending Budget",
+spentSoFar:"Spent so far",
+remaining:"Budget remaining",
+goal:"🎯 Savings Goal",
+savings:"Current savings",
+report:"📊 Monthly Report",
+total:"Total expenses",
+rates:"💱 Exchange Rates",
+ratesHelp:"Value of each currency per 1 USD",
+saveRates:"Save Exchange Rates",
+incomeMonth:"💵 Monthly Income",
+saveIncome:"Save Income",
+budgetMonth:"🎯 Monthly Spending Budget",
+budgetHelp:"The amount you allow yourself to spend during the month.",
+saveBudget:"Save Budget",
+fixedTitle:"🏠 Fixed Expenses",
+addFixed:"Add Fixed Expense",
+daily:"🛒 Daily Expense",
+addDaily:"Add Expense",
+history:"📋 Transactions",
+clear:"Clear Month",
+edit:"Edit",
+del:"Delete",
+valid:"Please enter a valid amount.",
+name:"Please enter a valid name and amount.",
+over:"🚨 You exceeded your spending budget!",
+low:"⚠️ You are close to your budget limit.",
+good:"✅ Great! Your spending is under control.",
+confirm:"Are you sure you want to clear this month?",
+smartTitle:"🧠 Smart Spending",
+calendar:"📅 Calendar",
+calendarHint:"Tap a day to see its expenses",
+advanced:"📈 Advanced Analysis",
+category:"Expenses by Category",
+chart:"Spending During Month",
+accounts:"👤 Accounts",
+addAccount:"Add Account",
+backup:"💾 Backup & Restore",
+backupHelp:"Save a copy of your Masrofi data or restore an old copy.",
+backup:"💾 Backup",
+reset:"🗑️ Reset All Data",
+average:"Daily spending average",
+largest:"Largest expense",
+days:"Days remaining",
+smartGood:"Great! Your spending is under control.",
+smartWarning:"Watch out! You are getting close to your monthly budget.",
+smartOver:"Warning! You exceeded your spending budget.",
+noExpenses:"No transactions",
+noFixed:"No fixed expenses",
+noAccounts:"No accounts",
+accountName:"Account name",
+accountBalance:"Balance",
+accountAdded:"Account added.",
+accountDelete:"Delete",
+dayExpenses:"Expenses for this day"
+}
+};
 
+let lang=localStorage.getItem("language")||"ar";
 
-/* OPEN MODAL */
+let current=
+localStorage.getItem("currentMonth")||
+new Date().toISOString().slice(0,7);
 
-function openModal(){
+let data=
+JSON.parse(localStorage.getItem("financeData")||"{}");
 
-    document.getElementById("modal").style.display="flex";
+let settingsData=
+JSON.parse(
+localStorage.getItem("settings")||
+'{"baseCurrency":"USD","rates":{"USD":1,"LBP":1,"SYP":1}}'
+);
 
+let accounts=
+JSON.parse(localStorage.getItem("masrofiAccounts")||"[]");
+
+let editId=null;
+
+function t(k){
+return T[lang][k];
 }
 
+function monthData(){
 
-/* CLOSE MODAL */
+if(!data[current]){
+data[current]={
+income:null,
+budget:null,
+fixed:[],
+expenses:[]
+};
+}
+
+return data[current];
+}
+
+function save(){
+localStorage.setItem("financeData",JSON.stringify(data));
+}
+
+function saveSettings(){
+localStorage.setItem("settings",JSON.stringify(settingsData));
+}
+
+function escape(x){
+return String(x).replace(
+/[&<>"']/g,
+m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m])
+);
+}
+
+function toUSD(a,c){
+let r=settingsData.rates[c];
+return r>0?Number(a)/r:0;
+}
+
+function toBase(a,c){
+return toUSD(a,c)*settingsData.rates[settingsData.baseCurrency];
+}
+
+function money(a,c=settingsData.baseCurrency){
+
+if(c==="USD"){
+return "$"+Number(a).toFixed(2);
+}
+
+return c+" "+Math.round(a).toLocaleString("en-US");
+}
+
+function total(list){
+return list.reduce((s,x)=>s+toBase(x.amount,x.currency),0);
+}
+
+function months(){
+
+let s=document.getElementById("month");
+s.innerHTML="";
+
+let d=new Date();
+d.setMonth(d.getMonth()-12);
+
+for(let i=0;i<25;i++){
+
+let x=new Date(d);
+x.setMonth(d.getMonth()+i);
+
+let v=
+x.getFullYear()+"-"+
+String(x.getMonth()+1).padStart(2,"0");
+
+let o=document.createElement("option");
+
+o.value=v;
+o.textContent=x.toLocaleDateString(
+lang==="ar"?"ar-LB":"en-US",
+{month:"long",year:"numeric"}
+);
+
+s.appendChild(o);
+}
+
+s.value=current;
+}
+
+function changeMonth(){
+
+current=document.getElementById("month").value;
+
+localStorage.setItem("currentMonth",current);
+
+monthData();
+update();
+}
+
+function moveMonth(n){
+
+let d=new Date(current+"-01");
+d.setMonth(d.getMonth()+n);
+
+current=
+d.getFullYear()+"-"+
+String(d.getMonth()+1).padStart(2,"0");
+
+localStorage.setItem("currentMonth",current);
+
+monthData();
+update();
+}
+
+function saveIncome(){
+
+let a=Number(document.getElementById("incomeInput").value);
+
+if(a<=0){
+alert(t("valid"));
+return;
+}
+
+monthData().income={
+amount:a,
+currency:document.getElementById("incomeCurrency").value
+};
+
+save();
+
+document.getElementById("incomeInput").value="";
+
+update();
+}
+
+function saveBudget(){
+
+let a=Number(document.getElementById("budgetInput").value);
+
+if(a<=0){
+alert(t("valid"));
+return;
+}
+
+monthData().budget={
+amount:a,
+currency:document.getElementById("budgetCurrency").value
+};
+
+save();
+
+document.getElementById("budgetInput").value="";
+
+update();
+}
+
+function addFixed(){
+
+let name=document.getElementById("fixedName").value.trim();
+let a=Number(document.getElementById("fixedAmount").value);
+
+if(!name||a<=0){
+alert(t("name"));
+return;
+}
+
+monthData().fixed.push({
+id:Date.now(),
+name,
+amount:a,
+currency:document.getElementById("fixedCurrency").value,
+category:document.getElementById("fixedCategory").value
+});
+
+save();
+
+document.getElementById("fixedName").value="";
+document.getElementById("fixedAmount").value="";
+
+update();
+}
+
+function deleteFixed(id){
+
+monthData().fixed=
+monthData().fixed.filter(x=>x.id!==id);
+
+save();
+update();
+}
+
+function editFixed(id){
+
+let x=monthData().fixed.find(x=>x.id===id);
+
+if(!x)return;
+
+let n=prompt(
+lang==="ar"?"اسم المصروف":"Expense name",
+x.name
+);
+
+if(n===null)return;
+
+let a=Number(prompt(
+lang==="ar"?"المبلغ":"Amount",
+x.amount
+));
+
+if(!n.trim()||a<=0){
+alert(t("name"));
+return;
+}
+
+x.name=n.trim();
+x.amount=a;
+
+save();
+update();
+}
+
+function addDaily(){
+
+let a=Number(document.getElementById("dailyAmount").value);
+
+if(a<=0){
+alert(t("valid"));
+return;
+}
+
+let now=new Date();
+
+monthData().expenses.unshift({
+
+id:Date.now(),
+
+amount:a,
+
+currency:document.getElementById("dailyCurrency").value,
+
+category:document.getElementById("dailyCategory").value,
+
+note:
+document.getElementById("dailyNote").value.trim()||
+(lang==="ar"?"مصروف يومي":"Daily Expense"),
+
+date:now.toISOString().slice(0,10),
+
+displayDate:now.toLocaleDateString(
+lang==="ar"?"ar-LB":"en-US"
+),
+
+time:now.toLocaleTimeString(
+lang==="ar"?"ar-LB":"en-US",
+{hour:"2-digit",minute:"2-digit"}
+)
+
+});
+
+save();
+
+document.getElementById("dailyAmount").value="";
+document.getElementById("dailyNote").value="";
+
+update();
+}
+
+function deleteDaily(id){
+
+monthData().expenses=
+monthData().expenses.filter(x=>x.id!==id);
+
+save();
+update();
+}
+
+function editDaily(id){
+
+let x=monthData().expenses.find(x=>x.id===id);
+
+if(!x)return;
+
+editId=id;
+
+document.getElementById("editAmount").value=x.amount;
+document.getElementById("editCurrency").value=x.currency;
+document.getElementById("editNote").value=x.note;
+document.getElementById("editCategory").value=x.category;
+
+document.getElementById("modal").style.display="block";
+}
+
+function saveEdit(){
+
+let x=monthData().expenses.find(x=>x.id===editId);
+
+let a=Number(document.getElementById("editAmount").value);
+
+if(!x||a<=0){
+alert(t("valid"));
+return;
+}
+
+x.amount=a;
+
+x.currency=document.getElementById("editCurrency").value;
+
+x.note=
+document.getElementById("editNote").value.trim()||
+(lang==="ar"?"مصروف يومي":"Daily Expense");
+
+x.category=document.getElementById("editCategory").value;
+
+save();
+closeModal();
+update();
+}
 
 function closeModal(){
 
-    document.getElementById("modal").style.display="none";
+editId=null;
+document.getElementById("modal").style.display="none";
+}
+
+function clearMonth(){
+
+if(!confirm(t("confirm")))return;
+
+data[current]={
+income:null,
+budget:null,
+fixed:[],
+expenses:[]
+};
+
+save();
+update();
+}
+
+/* ACCOUNTS */
+
+function addAccount(){
+
+let name=document.getElementById("accountName").value.trim();
+let amount=Number(document.getElementById("accountAmount").value);
+let currency=document.getElementById("accountCurrency").value;
+
+if(!name||amount<0){
+alert(t("name"));
+return;
+}
+
+accounts.push({
+id:Date.now(),
+name,
+amount,
+currency
+});
+
+localStorage.setItem(
+"masrofiAccounts",
+JSON.stringify(accounts)
+);
+
+document.getElementById("accountName").value="";
+document.getElementById("accountAmount").value="";
+
+renderAccounts();
+}
+
+function deleteAccount(id){
+
+accounts=accounts.filter(x=>x.id!==id);
+
+localStorage.setItem(
+"masrofiAccounts",
+JSON.stringify(accounts)
+);
+
+renderAccounts();
+}
+
+function renderAccounts(){
+
+let box=document.getElementById("accountsList");
+
+if(!accounts.length){
+box.innerHTML=
+'<div class="empty">'+t("noAccounts")+"</div>";
+return;
+}
+
+box.innerHTML=accounts.map(x=>`
+
+<div class="account">
+
+<div>
+<div class="account-name">
+${escape(x.name)}
+</div>
+<div class="small">
+${x.currency}
+</div>
+</div>
+
+<div>
+<div class="account-balance">
+${money(x.amount,x.currency)}
+</div>
+
+<button
+class="smallbtn delete"
+onclick="deleteAccount(${x.id})">
+${t("accountDelete")}
+</button>
+</div>
+
+</div>
+
+`).join("");
+}
+
+/* CALENDAR */
+
+function renderCalendar(){
+
+let box=document.getElementById("calendar");
+
+box.innerHTML="";
+
+let [year,month]=current.split("-").map(Number);
+
+let first=new Date(year,month-1,1);
+let last=new Date(year,month,0);
+
+let start=first.getDay();
+
+for(let i=0;i<start;i++){
+
+let e=document.createElement("div");
+e.className="day emptyday";
+box.appendChild(e);
 
 }
 
+let expenses=monthData().expenses;
 
-/* ADD EXPENSE */
+for(let day=1;day<=last.getDate();day++){
 
-function addExpense(){
+let date=
+year+"-"+
+String(month).padStart(2,"0")+"-"+
+String(day).padStart(2,"0");
 
-    const name =
-        document.getElementById("expenseName").value.trim();
+let dayExpenses=expenses.filter(x=>{
 
-    const amount =
-        Number(document.getElementById("expenseAmount").value);
+if(x.date)return x.date===date;
 
-    const category =
-        document.getElementById("expenseCategory").value;
+return false;
 
-    if(!name || !amount || amount <= 0){
+});
 
-        alert("Please enter a valid expense.");
+let amount=dayExpenses.reduce(
+(s,x)=>s+toBase(x.amount,x.currency),0
+);
 
-        return;
+let e=document.createElement("div");
 
-    }
+e.className="day";
 
+if(
+date===
+new Date().toISOString().slice(0,10)
+){
+e.classList.add("today");
+}
 
-    totalExpenses += amount;
+e.innerHTML=`
+<div class="day-number">${day}</div>
+${amount>0?
+`<div class="day-total">${money(amount)}</div>`:
+""}
+`;
 
-    balance -= amount;
+e.onclick=()=>showDay(date);
 
+box.appendChild(e);
+}
+}
 
-    document.getElementById("expenses").textContent =
-        "$" + totalExpenses.toFixed(2);
+function showDay(date){
 
-    document.getElementById("monthly").textContent =
-        "$" + totalExpenses.toFixed(2);
+let list=monthData().expenses.filter(x=>x.date===date);
 
-    document.getElementById("balance").textContent =
-        "$" + balance.toFixed(2);
+if(!list.length){
+alert(t("noExpenses"));
+return;
+}
 
+let totalDay=list.reduce(
+(s,x)=>s+toBase(x.amount,x.currency),0
+);
 
-    updateBudget();
+let text=t("dayExpenses")+
+"\n\n";
 
+list.forEach(x=>{
+text+=
+x.category+" "+
+x.note+" — "+
+money(x.amount,x.currency)+
+"\n";
+});
 
-    const list =
-        document.getElementById("expenseList");
+text+="\n"+money(totalDay);
 
+alert(text);
+}
 
-    const item =
-        document.createElement("div");
+/* ADVANCED REPORT */
 
-    item.className="expense-item";
+function renderCategoryReport(){
 
+let box=document.getElementById("categoryReport");
 
-    const time =
-        new Date().toLocaleTimeString([],{
-            hour:"2-digit",
-            minute:"2-digit"
-        });
+let list=monthData().expenses;
 
+if(!list.length){
+box.innerHTML='<div class="empty">'+t("noExpenses")+"</div>";
+return;
+}
 
-    item.innerHTML=`
+let cats={};
 
-        <div class="expense-left">
+list.forEach(x=>{
 
-            <div class="icon">
-                ${category}
-            </div>
+let key=x.category;
 
-            <div>
+if(!cats[key])cats[key]=0;
 
-                <div class="expense-name">
-                    ${escapeHTML(name)}
-                </div>
+cats[key]+=toBase(x.amount,x.currency);
 
-                <div class="expense-date">
-                    Today • ${time}
-                </div>
+});
 
-            </div>
+let values=Object.entries(cats);
 
-        </div>
+let max=Math.max(...values.map(x=>x[1]));
 
-        <div class="expense-amount">
-            -$${amount.toFixed(2)}
-        </div>
+box.innerHTML=values
+.sort((a,b)=>b[1]-a[1])
+.map(x=>`
 
-    `;
+<div class="category-row">
 
+<div class="cat-name">${x[0]}</div>
 
-    list.prepend(item);
+<div class="category-track">
+<div class="category-fill"
+style="width:${max?x[1]/max*100:0}%">
+</div>
+</div>
 
+<div class="category-money">
+${money(x[1])}
+</div>
 
-    closeModal();
+</div>
 
+`).join("");
+}
 
-    document.getElementById("expenseName").value="";
-    document.getElementById("expenseAmount").value="";
+function renderChart(){
 
+let box=document.getElementById("dailyChart");
 
-    saveData();
+box.innerHTML="";
+
+let [year,month]=current.split("-").map(Number);
+let days=new Date(year,month,0).getDate();
+
+let expenses=monthData().expenses;
+
+let values=[];
+
+for(let day=1;day<=days;day++){
+
+let date=
+year+"-"+
+String(month).padStart(2,"0")+"-"+
+String(day).padStart(2,"0");
+
+let amount=expenses
+.filter(x=>x.date===date)
+.reduce((s,x)=>s+toBase(x.amount,x.currency),0);
+
+values.push(amount);
+}
+
+let max=Math.max(...values,1);
+
+values.forEach((v,i)=>{
+
+let col=document.createElement("div");
+col.className="chart-col";
+
+col.innerHTML=`
+
+<div
+class="chart-bar"
+title="${money(v)}"
+style="height:${Math.max(3,v/max*125)}px">
+</div>
+
+<div class="chart-label">
+${i+1}
+</div>
+
+`;
+
+box.appendChild(col);
+});
+}
+
+/* SMART SPENDING */
+
+function renderSmart(){
+
+let m=monthData();
+
+let daily=total(m.expenses);
+
+let budget=m.budget?
+toBase(m.budget.amount,m.budget.currency):0;
+
+let now=new Date();
+
+let [year,month]=current.split("-").map(Number);
+
+let daysInMonth=new Date(year,month,0).getDate();
+
+let daysPassed=
+current===
+now.toISOString().slice(0,7)
+?now.getDate()
+:daysInMonth;
+
+let average=daysPassed>0?daily/daysPassed:0;
+
+let largest=0;
+
+m.expenses.forEach(x=>{
+largest=Math.max(
+largest,
+toBase(x.amount,x.currency)
+);
+});
+
+let daysLeft=
+current===
+now.toISOString().slice(0,7)
+?Math.max(0,daysInMonth-now.getDate())
+:0;
+
+document.getElementById("dailyAverage").textContent=
+money(average);
+
+document.getElementById("largestExpense").textContent=
+money(largest);
+
+document.getElementById("daysLeft").textContent=
+daysLeft;
+
+let message=t("smartGood");
+
+if(budget>0){
+
+if(daily>budget){
+message=t("smartOver");
+}
+else if(daily>=budget*.85){
+message=t("smartWarning");
+}
 
 }
 
+document.getElementById("smartMessage").textContent=
+message;
+}
 
-/* UPDATE BUDGET */
+/* MAIN UPDATE */
 
-function updateBudget(){
+function update(){
 
-    let percent =
-        (totalExpenses / budget) * 100;
+months();
 
+let m=monthData();
 
-    let visualPercent =
-        Math.min(percent,100);
+let income=
+m.income?
+toBase(m.income.amount,m.income.currency):0;
 
+let fixed=total(m.fixed);
+let daily=total(m.expenses);
+let expenses=fixed+daily;
+let balance=income-expenses;
 
-    document.getElementById("budgetBar").style.width =
-        visualPercent + "%";
+let budget=
+m.budget?
+toBase(m.budget.amount,m.budget.currency):0;
 
+let budgetLeft=budget-daily;
 
-    document.getElementById("percentage").textContent =
-        Math.round(percent) + "%";
+let savings=income-expenses;
 
+let goal=
+m.budget?
+Math.max(0,income-fixed-budget):
+Math.max(0,income-fixed);
 
-    document.getElementById("spent").textContent =
-        "$" + totalExpenses.toFixed(2);
+let budgetPct=budget>0?(daily/budget)*100:0;
 
+let savingPct=goal>0?(savings/goal)*100:0;
 
-    let remaining =
-        budget - totalExpenses;
+document.getElementById("balance").textContent=money(balance);
+document.getElementById("income").textContent=money(income);
+document.getElementById("fixed").textContent=money(fixed);
+document.getElementById("spent").textContent=money(daily);
 
+document.getElementById("currencyText").textContent=
+t("base")+" "+settingsData.baseCurrency;
 
-    document.getElementById("remaining").textContent =
-        "$" + Math.max(remaining,0).toFixed(2);
+document.getElementById("budgetValue").textContent=money(budget);
+document.getElementById("spentValue").textContent=money(daily);
+document.getElementById("remainingValue").textContent=
+money(Math.max(0,budgetLeft));
 
+document.getElementById("budgetBar").style.width=
+Math.min(100,Math.max(0,budgetPct))+"%";
 
-    const alertBox =
-        document.getElementById("budgetAlert");
+document.getElementById("budgetPercent").textContent=
+Math.round(budgetPct)+"%";
 
+document.getElementById("goalValue").textContent=money(goal);
+document.getElementById("savingsValue").textContent=
+money(Math.max(0,savings));
 
-    if(percent >= 100){
+document.getElementById("savingBar").style.width=
+Math.min(100,Math.max(0,savingPct))+"%";
 
-        alertBox.style.display="block";
+document.getElementById("savingPercent").textContent=
+Math.round(savingPct)+"%";
 
-        alertBox.textContent =
-            "🚨 Budget exceeded!";
+document.getElementById("rIncome").textContent=money(income);
+document.getElementById("rFixed").textContent=money(fixed);
+document.getElementById("rDaily").textContent=money(daily);
+document.getElementById("rTotal").textContent=money(expenses);
+document.getElementById("rBalance").textContent=money(balance);
+document.getElementById("rSavings").textContent=
+money(Math.max(0,savings));
 
-    }
+document.getElementById("incomeSaved").textContent=
+m.income?
+t("income")+": "+
+money(m.income.amount,m.income.currency):"";
 
-    else if(percent >= 80){
+document.getElementById("budgetSaved").textContent=
+m.budget?
+t("budget")+": "+
+money(m.budget.amount,m.budget.currency):"";
 
-        alertBox.style.display="block";
+let w=document.getElementById("warning");
+let s=document.getElementById("success");
 
-        alertBox.textContent =
-            "⚠️ You are getting close to your monthly budget.";
+w.style.display="none";
+s.style.display="none";
 
-    }
+if(budget>0){
 
-    else{
+if(daily>budget){
 
-        alertBox.style.display="none";
+w.textContent=t("over");
+w.style.display="block";
 
-    }
+}else if(daily>=budget*.85){
+
+w.textContent=t("low");
+w.style.display="block";
+
+}else{
+
+s.textContent=t("good");
+s.style.display="block";
 
 }
 
+}
 
-/* SECURITY */
+renderFixed();
+renderHistory();
+renderCalendar();
+renderCategoryReport();
+renderChart();
+renderSmart();
+renderAccounts();
+}
 
-function escapeHTML(text){
+function renderFixed(){
 
-    const div =
-        document.createElement("div");
+let box=document.getElementById("fixedList");
+let list=monthData().fixed;
 
-    div.textContent=text;
+if(!list.length){
 
-    return div.innerHTML;
+box.innerHTML=
+'<div class="empty">'+t("noFixed")+"</div>";
+
+return;
+}
+
+box.innerHTML=list.map(x=>`
+
+<div class="item">
+
+<div class="left">
+
+<div class="icon">${x.category}</div>
+
+<div>
+<div class="name">${escape(x.name)}</div>
+<div class="small">${x.currency}</div>
+</div>
+
+</div>
+
+<div>
+
+<div class="amount blue">
+${money(x.amount,x.currency)}
+</div>
+
+<button
+class="smallbtn edit"
+onclick="editFixed(${x.id})">
+${t("edit")}
+</button>
+
+<button
+class="smallbtn delete"
+onclick="deleteFixed(${x.id})">
+${t("del")}
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+}
+
+function renderHistory(){
+
+let box=document.getElementById("history");
+let list=monthData().expenses;
+
+if(!list.length){
+
+box.innerHTML=
+'<div class="empty">'+t("noExpenses")+"</div>";
+
+return;
+}
+
+box.innerHTML=list.map(x=>`
+
+<div class="item">
+
+<div class="left">
+
+<div class="icon">${x.category}</div>
+
+<div>
+
+<div class="name">${escape(x.note)}</div>
+
+<div class="small">
+${x.displayDate||x.date} • ${x.time||""} • ${x.currency}
+</div>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="amount red">
+-${money(x.amount,x.currency)}
+</div>
+
+<button
+class="smallbtn edit"
+onclick="editDaily(${x.id})">
+${t("edit")}
+</button>
+
+<button
+class="smallbtn delete"
+onclick="deleteDaily(${x.id})">
+${t("del")}
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+}
+
+/* BACKUP */
+
+function backupData(){
+
+let backup={
+version:"3.0",
+date:new Date().toISOString(),
+financeData:data,
+settings:settingsData,
+accounts:accounts,
+language:lang,
+currentMonth:current
+};
+
+let blob=new Blob(
+[JSON.stringify(backup,null,2)],
+{type:"application/json"}
+);
+
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+
+a.href=url;
+a.download="masrofi-backup.json";
+
+document.body.appendChild(a);
+a.click();
+a.remove();
+
+URL.revokeObjectURL(url);
+}
+
+function restoreData(event){
+
+let file=event.target.files[0];
+
+if(!file)return;
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+try{
+
+let backup=JSON.parse(e.target.result);
+
+if(backup.financeData){
+data=backup.financeData;
+}
+
+if(backup.settings){
+settingsData=backup.settings;
+}
+
+if(backup.accounts){
+accounts=backup.accounts;
+}
+
+if(backup.language){
+lang=backup.language;
+}
+
+if(backup.currentMonth){
+current=backup.currentMonth;
+}
+
+localStorage.setItem(
+"financeData",
+JSON.stringify(data)
+);
+
+localStorage.setItem(
+"settings",
+JSON.stringify(settingsData)
+);
+
+localStorage.setItem(
+"masrofiAccounts",
+JSON.stringify(accounts)
+);
+
+localStorage.setItem(
+"language",
+lang
+);
+
+localStorage.setItem(
+"currentMonth",
+current
+);
+
+loadSettings();
+applyLanguage();
+
+alert(
+lang==="ar"
+?"تم استرجاع النسخة بنجاح ✅":
+"Backup restored successfully ✅"
+);
+
+}catch(err){
+
+alert(
+lang==="ar"
+?"ملف النسخة الاحتياطية غير صالح.":
+"Invalid backup file."
+);
 
 }
 
+};
 
-/* SAVE */
-
-function saveData(){
-
-    const data={
-        totalExpenses,
-        budget,
-        balance,
-        income
-    };
-
-    localStorage.setItem(
-        "masrofiData",
-        JSON.stringify(data)
-    );
-
+reader.readAsText(file);
 }
 
+function resetAll(){
 
-/* LOAD */
+let msg=
+lang==="ar"
+?"⚠️ سيتم حذف كل بيانات مصروفي. هل أنت متأكد؟":
+"⚠️ This will delete all Masrofi data. Are you sure?";
 
-function loadData(){
+if(!confirm(msg))return;
 
-    const saved =
-        localStorage.getItem("masrofiData");
+localStorage.removeItem("financeData");
+localStorage.removeItem("settings");
+localStorage.removeItem("masrofiAccounts");
 
+data={};
+accounts=[];
 
-    if(!saved){
+settingsData={
+baseCurrency:"USD",
+rates:{USD:1,LBP:1,SYP:1}
+};
 
-        updateBudget();
-
-        return;
-
-    }
-
-
-    const data =
-        JSON.parse(saved);
-
-
-    totalExpenses =
-        data.totalExpenses ?? 750;
-
-    budget =
-        data.budget ?? 1000;
-
-    balance =
-        data.balance ?? 1250;
-
-    income =
-        data.income ?? 2000;
-
-
-    document.getElementById("expenses").textContent =
-        "$" + totalExpenses.toFixed(2);
-
-    document.getElementById("monthly").textContent =
-        "$" + totalExpenses.toFixed(2);
-
-    document.getElementById("balance").textContent =
-        "$" + balance.toFixed(2);
-
-    document.getElementById("income").textContent =
-        "$" + income.toFixed(2);
-
-
-    updateBudget();
-
+monthData();
+loadSettings();
+update();
 }
 
+/* LANGUAGE */
+
+function toggleLanguage(){
+
+lang=lang==="ar"?"en":"ar";
+
+localStorage.setItem("language",lang);
+
+applyLanguage();
+}
+
+function applyLanguage(){
+
+document.documentElement.lang=lang;
+
+document.body.classList.toggle("rtl",lang==="ar");
+
+const ids={
+
+title:"title",
+subtitle:"subtitle",
+lang:"langBtn",
+settings:"settingsBtn",
+month:"monthTitle",
+prev:"prev",
+next:"next",
+balance:"balanceTitle",
+income:"incomeLabel",
+fixed:"fixedLabel",
+spent:"spentLabel1",
+budgetDash:"budgetDashboardTitle",
+budget:"budgetLabel",
+spentSoFar:"spentSoFar",
+remaining:"remainingBudget",
+goal:"goalLabel",
+savings:"currentSavingsLabel",
+report:"reportTitle",
+rates:"ratesTitle",
+ratesHelp:"ratesHelp",
+saveRates:"ratesBtn",
+incomeMonth:"incomeTitle",
+saveIncome:"incomeBtn",
+budgetMonth:"budgetTitle",
+budgetHelp:"budgetHelp",
+saveBudget:"budgetBtn",
+fixedTitle:"fixedTitle",
+addFixed:"fixedBtn",
+daily:"dailyTitle",
+addDaily:"dailyBtn",
+history:"historyTitle",
+clear:"clearBtn",
+edit:"editTitle",
+smartTitle:"smartTitle",
+calendar:"calendarTitle",
+calendarHint:"calendarHint",
+advanced:"advancedTitle",
+category:"categoryTitle",
+chart:"dailyChartTitle",
+accounts:"accountsTitle",
+addAccount:"addAccountBtn",
+backup:"backupTitle",
+backupHelp:"backupHelp",
+backup:"backupBtn",
+reset:"resetBtn",
+average:"dailyAverageLabel",
+largest:"largestLabel",
+days:"daysLeftLabel"
+};
+
+for(let k in ids){
+
+let el=document.getElementById(ids[k]);
+
+if(el&&T[lang][k]!==undefined){
+el.textContent=T[lang][k];
+}
+}
+
+document.getElementById("baseLabel").textContent=
+lang==="ar"?"العملة الأساسية":"Base Currency";
+
+document.getElementById("rIncomeLabel").textContent=
+lang==="ar"?"المدخول":"Income";
+
+document.getElementById("rFixedLabel").textContent=
+lang==="ar"?"المصاريف الثابتة":"Fixed Expenses";
+
+document.getElementById("rDailyLabel").textContent=
+lang==="ar"?"المصاريف اليومية":"Daily Expenses";
+
+document.getElementById("rTotalLabel").textContent=
+lang==="ar"?"إجمالي المصاريف":"Total Expenses";
+
+document.getElementById("rBalanceLabel").textContent=
+lang==="ar"?"الرصيد المتبقي":"Remaining Balance";
+
+document.getElementById("rSavingsLabel").textContent=
+lang==="ar"?"💵 التوفير الحالي":"💵 Current Savings";
+
+document.getElementById("accountName").placeholder=
+t("accountName");
+
+document.getElementById("accountAmount").placeholder=
+t("accountBalance");
+
+update();
+}
+
+/* SETTINGS */
+
+function loadSettings(){
+
+document.getElementById("baseCurrency").value=
+settingsData.baseCurrency;
+
+document.getElementById("lbp").value=
+settingsData.rates.LBP||"";
+
+document.getElementById("syp").value=
+settingsData.rates.SYP||"";
+}
+
+function saveRates(){
+
+let lbp=Number(document.getElementById("lbp").value);
+let syp=Number(document.getElementById("syp").value);
+
+if(lbp<=0||syp<=0){
+
+alert(t("valid"));
+return;
+}
+
+settingsData.rates={
+USD:1,
+LBP:lbp,
+SYP:syp
+};
+
+saveSettings();
+update();
+}
+
+function changeBase(){
+
+settingsData.baseCurrency=
+document.getElementById("baseCurrency").value;
+
+saveSettings();
+update();
+}
 
 /* START */
 
-loadData();
+loadSettings();
+monthData();
+applyLanguage();
+
+if("serviceWorker" in navigator){
+
+window.addEventListener("load",()=>{
+
+navigator.serviceWorker
+.register("./service-worker.js")
+.catch(()=>{});
+
+});
+
+}
 
 </script>
 
