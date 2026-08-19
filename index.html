@@ -2191,7 +2191,1499 @@ navigator.serviceWorker
 });
 
 }
+/* =====================================================
+   MASROFI EXTRA FEATURES
+   PIN LOCK + SMART BUDGET ALERT
+===================================================== */
 
+const LOCK_KEY = "masrofiAppPIN";
+const ALERT_KEY = "masrofiBudgetAlert";
+
+let pinMode = "setup";
+
+/* ---------- PIN SYSTEM ---------- */
+
+function createPinUI(){
+
+    if(document.getElementById("pinOverlay")) return;
+
+    const overlay=document.createElement("div");
+
+    overlay.id="pinOverlay";
+
+    overlay.innerHTML=`
+    <div class="pinBox">
+
+        <div class="pinLogo">💰</div>
+
+        <h2 id="pinTitle">🔐 حماية مصروفي</h2>
+
+        <div id="pinMessage">
+            أنشئ رمز PIN من 4 أرقام
+        </div>
+
+        <input
+            id="pinInput"
+            type="password"
+            inputmode="numeric"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="off">
+
+        <button onclick="submitPIN()" id="pinSubmit">
+            متابعة
+        </button>
+
+        <button
+            onclick="forgotPIN()"
+            class="pinForgot">
+            نسيت الرمز؟
+        </button>
+
+    </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const style=document.createElement("style");
+
+    style.textContent=`
+
+    #pinOverlay{
+        position:fixed;
+        inset:0;
+        z-index:99999;
+        background:#080808;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+    }
+
+    .pinBox{
+        width:100%;
+        max-width:380px;
+        background:#111;
+        border:1px solid #292929;
+        border-radius:25px;
+        padding:28px 20px;
+        text-align:center;
+        box-shadow:0 20px 70px #000;
+    }
+
+    .pinLogo{
+        font-size:55px;
+        margin-bottom:10px;
+    }
+
+    .pinBox h2{
+        margin:5px 0 10px;
+        color:#fff;
+    }
+
+    #pinMessage{
+        color:#999;
+        font-size:14px;
+        margin-bottom:18px;
+    }
+
+    #pinInput{
+        width:100%;
+        height:58px;
+        text-align:center;
+        font-size:28px;
+        letter-spacing:12px;
+        background:#181818;
+        color:#fff;
+        border:1px solid #333;
+        border-radius:15px;
+        outline:none;
+        margin-bottom:12px;
+    }
+
+    #pinInput:focus{
+        border-color:#d71920;
+        box-shadow:0 0 0 3px #d7192030;
+    }
+
+    #pinSubmit{
+        width:100%;
+        height:52px;
+        border:0;
+        border-radius:14px;
+        background:#d71920;
+        color:white;
+        font-size:17px;
+        font-weight:800;
+        cursor:pointer;
+        margin-bottom:8px;
+    }
+
+    .pinForgot{
+        background:transparent!important;
+        color:#888!important;
+        font-size:13px!important;
+        min-height:35px!important;
+    }
+
+    `;
+
+    document.head.appendChild(style);
+
+    document
+    .getElementById("pinInput")
+    .addEventListener("input",function(){
+
+        this.value=this.value.replace(/[^0-9]/g,"");
+
+    });
+
+    setTimeout(()=>{
+        document.getElementById("pinInput")?.focus();
+    },100);
+}
+
+
+function submitPIN(){
+
+    const input=document.getElementById("pinInput");
+
+    if(!input) return;
+
+    const pin=input.value;
+
+    if(!/^\d{4}$/.test(pin)){
+
+        showPinMessage(
+            lang==="ar"
+            ?"أدخل PIN من 4 أرقام."
+            :"Enter a 4-digit PIN."
+        );
+
+        return;
+    }
+
+    const saved=localStorage.getItem(LOCK_KEY);
+
+    /* CREATE PIN */
+
+    if(!saved){
+
+        localStorage.setItem(LOCK_KEY,pin);
+
+        showPinMessage(
+            lang==="ar"
+            ?"تم إنشاء رمز PIN بنجاح ✅"
+            :"PIN created successfully ✅"
+        );
+
+        setTimeout(unlockApp,500);
+
+        return;
+    }
+
+    /* LOGIN */
+
+    if(pin===saved){
+
+        unlockApp();
+
+    }else{
+
+        input.value="";
+
+        showPinMessage(
+            lang==="ar"
+            ?"رمز PIN غير صحيح ❌"
+            :"Wrong PIN ❌"
+        );
+
+        if(navigator.vibrate){
+            navigator.vibrate([100,50,100]);
+        }
+    }
+}
+
+
+function showPinMessage(message){
+
+    const box=document.getElementById("pinMessage");
+
+    if(box){
+        box.textContent=message;
+    }
+}
+
+
+function unlockApp(){
+
+    const overlay=document.getElementById("pinOverlay");
+
+    if(!overlay) return;
+
+    overlay.style.opacity="0";
+    overlay.style.transition=".25s";
+
+    setTimeout(()=>{
+        overlay.remove();
+    },250);
+
+}
+
+
+/* ---------- LOCK APP ---------- */
+
+function lockApp(){
+
+    createPinUI();
+
+    const overlay=document.getElementById("pinOverlay");
+
+    if(overlay){
+        overlay.style.opacity="1";
+        overlay.style.display="flex";
+    }
+
+    const input=document.getElementById("pinInput");
+
+    if(input){
+        input.value="";
+        input.focus();
+    }
+
+    pinMode="login";
+
+    showPinMessage(
+        lang==="ar"
+        ?"أدخل رمز PIN لفتح مصروفي 🔐"
+        :"Enter your PIN to unlock Masrofi 🔐"
+    );
+}
+
+
+/* ---------- CHANGE PIN ---------- */
+
+function changePIN(){
+
+    const oldPin=localStorage.getItem(LOCK_KEY);
+
+    if(!oldPin){
+
+        createPinUI();
+
+        return;
+    }
+
+    const currentPin=prompt(
+        lang==="ar"
+        ?"أدخل رمز PIN الحالي:"
+        :"Enter your current PIN:"
+    );
+
+    if(currentPin!==oldPin){
+
+        alert(
+            lang==="ar"
+            ?"رمز PIN الحالي غير صحيح."
+            :"Current PIN is incorrect."
+        );
+
+        return;
+    }
+
+    const newPin=prompt(
+        lang==="ar"
+        ?"أدخل PIN جديد من 4 أرقام:"
+        :"Enter a new 4-digit PIN:"
+    );
+
+    if(!/^\d{4}$/.test(newPin)){
+
+        alert(
+            lang==="ar"
+            ?"يجب أن يكون PIN من 4 أرقام."
+            :"PIN must contain 4 digits."
+        );
+
+        return;
+    }
+
+    localStorage.setItem(LOCK_KEY,newPin);
+
+    alert(
+        lang==="ar"
+        ?"تم تغيير PIN بنجاح ✅"
+        :"PIN changed successfully ✅"
+    );
+}
+
+
+/* ---------- FORGOT PIN ---------- */
+
+function forgotPIN(){
+
+    const answer=confirm(
+        lang==="ar"
+        ?"إذا نسيت PIN، يمكنك حذف PIN، لكن لن يتم حذف مصاريفك. هل تريد المتابعة؟"
+        :"If you forgot your PIN, you can remove it. Your expenses will NOT be deleted. Continue?"
+    );
+
+    if(!answer) return;
+
+    localStorage.removeItem(LOCK_KEY);
+
+    alert(
+        lang==="ar"
+        ?"تم إلغاء PIN. عند فتح التطبيق مرة أخرى يمكنك إنشاء PIN جديد."
+        :"PIN removed. You can create a new PIN."
+    );
+
+    location.reload();
+}
+
+
+/* =====================================================
+   BUDGET ALERT
+===================================================== */
+
+function checkBudgetAlert(){
+
+    const m=monthData();
+
+    if(!m) return;
+
+    if(!m.budget) return;
+
+    const budget=toBase(
+        m.budget.amount,
+        m.budget.currency
+    );
+
+    const spent=total(m.expenses);
+
+    if(budget<=0) return;
+
+    const percent=(spent/budget)*100;
+
+    const alertKey=
+        current+"_"+Math.floor(percent/5);
+
+    const alreadyShown=
+        localStorage.getItem(ALERT_KEY);
+
+    /* OVER BUDGET */
+
+    if(percent>=100){
+
+        if(alreadyShown!==alertKey){
+
+            localStorage.setItem(
+                ALERT_KEY,
+                alertKey
+            );
+
+            budgetNotification(
+                "over"
+            );
+        }
+
+        return;
+    }
+
+    /* 85% */
+
+    if(percent>=85){
+
+        if(alreadyShown!==alertKey){
+
+            localStorage.setItem(
+                ALERT_KEY,
+                alertKey
+            );
+
+            budgetNotification(
+                "warning"
+            );
+        }
+
+    }
+}
+
+
+function budgetNotification(type){
+
+    const m=monthData();
+
+    const budget=toBase(
+        m.budget.amount,
+        m.budget.currency
+    );
+
+    const spent=total(m.expenses);
+
+    let title;
+    let message;
+
+    if(type==="over"){
+
+        title=
+            lang==="ar"
+            ?"🚨 تجاوزت الميزانية"
+            :"🚨 Budget exceeded";
+
+        message=
+            lang==="ar"
+            ?`صرفك ${money(spent)} من ${money(budget)}. لقد تجاوزت ميزانيتك.`
+            :`You spent ${money(spent)} of ${money(budget)}. You exceeded your budget.`;
+
+    }else{
+
+        title=
+            lang==="ar"
+            ?"⚠️ اقتربت من الميزانية"
+            :"⚠️ Budget warning";
+
+        message=
+            lang==="ar"
+            ?`وصل مصروفك إلى ${Math.round((spent/budget)*100)}% من ميزانيتك.`
+            :`Your spending reached ${Math.round((spent/budget)*100)}% of your budget.`;
+    }
+
+    /* IN-APP ALERT */
+
+    showBudgetPopup(title,message);
+
+    /* DEVICE NOTIFICATION */
+
+    if(
+        "Notification" in window &&
+        Notification.permission==="granted"
+    ){
+
+        try{
+
+            new Notification(title,{
+                body:message,
+                icon:"./icon-192.png",
+                badge:"./icon-192.png"
+            });
+
+        }catch(e){}
+
+    }
+}
+
+
+/* ---------- IN APP POPUP ---------- */
+
+function showBudgetPopup(title,message){
+
+    let popup=document.getElementById(
+        "budgetAlertPopup"
+    );
+
+    if(!popup){
+
+        popup=document.createElement("div");
+
+        popup.id="budgetAlertPopup";
+
+        popup.innerHTML=`
+
+        <div class="budgetAlertBox">
+
+            <div id="budgetAlertIcon">
+                ⚠️
+            </div>
+
+            <h3 id="budgetAlertTitle"></h3>
+
+            <p id="budgetAlertMessage"></p>
+
+            <button onclick="closeBudgetPopup()">
+                OK
+            </button>
+
+        </div>
+        `;
+
+        document.body.appendChild(popup);
+
+        const style=document.createElement("style");
+
+        style.textContent=`
+
+        #budgetAlertPopup{
+            position:fixed;
+            inset:0;
+            z-index:99990;
+            background:#000b;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+
+        .budgetAlertBox{
+            width:100%;
+            max-width:380px;
+            background:#111;
+            border-radius:23px;
+            padding:25px 20px;
+            text-align:center;
+            border:1px solid #522;
+            box-shadow:0 20px 70px #000;
+        }
+
+        .budgetAlertBox #budgetAlertIcon{
+            font-size:48px;
+        }
+
+        .budgetAlertBox h3{
+            color:#fff;
+            margin:10px 0;
+        }
+
+        .budgetAlertBox p{
+            color:#aaa;
+            line-height:1.6;
+        }
+
+        .budgetAlertBox button{
+            margin-top:10px;
+        }
+
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    document.getElementById(
+        "budgetAlertTitle"
+    ).textContent=title;
+
+    document.getElementById(
+        "budgetAlertMessage"
+    ).textContent=message;
+
+    popup.style.display="flex";
+}
+
+
+function closeBudgetPopup(){
+
+    const popup=document.getElementById(
+        "budgetAlertPopup"
+    );
+
+    if(popup){
+        popup.style.display="none";
+    }
+}
+
+
+/* ---------- REQUEST NOTIFICATION ---------- */
+
+function enableBudgetNotifications(){
+
+    if(!("Notification" in window)){
+
+        alert(
+            lang==="ar"
+            ?"هذا الجهاز لا يدعم إشعارات المتصفح."
+            :"This device does not support browser notifications."
+        );
+
+        return;
+    }
+
+    Notification.requestPermission()
+    .then(permission=>{
+
+        if(permission==="granted"){
+
+            alert(
+                lang==="ar"
+                ?"تم تفعيل إشعارات الميزانية 🔔"
+                :"Budget notifications enabled 🔔"
+            );
+
+        }
+
+    });
+}
+
+
+/* =====================================================
+   ADD SECURITY BUTTONS TO SETTINGS
+===================================================== */
+
+function addSecuritySettings(){
+
+    const settings=document.getElementById(
+        "settings"
+    );
+
+    if(!settings) return;
+
+    if(document.getElementById(
+        "securityBox"
+    )) return;
+
+    const box=document.createElement("div");
+
+    box.id="securityBox";
+
+    box.innerHTML=`
+
+    <h3>
+        🔐 ${lang==="ar"?"أمان التطبيق":"App Security"}
+    </h3>
+
+    <div class="small">
+        ${
+            lang==="ar"
+            ?"احمِ مصروفي برمز PIN."
+            :"Protect Masrofi with a PIN."
+        }
+    </div>
+
+    <button
+        class="goldBtn"
+        onclick="changePIN()">
+        🔐 ${
+            lang==="ar"
+            ?"تغيير PIN"
+            :"Change PIN"
+        }
+    </button>
+
+    <button
+        class="blueBtn"
+        onclick="enableBudgetNotifications()">
+        🔔 ${
+            lang==="ar"
+            ?"تفعيل تنبيهات الميزانية"
+            :"Enable Budget Alerts"
+        }
+    </button>
+
+    <button
+        class="secondary"
+        onclick="lockApp()">
+        🔒 ${
+            lang==="ar"
+            ?"قفل التطبيق الآن"
+            :"Lock App Now"
+        }
+    </button>
+
+    `;
+
+    settings.appendChild(box);
+}
+
+
+/* =====================================================
+   PATCH ORIGINAL UPDATE
+===================================================== */
+
+const originalUpdate=window.update;
+
+window.update=function(){
+
+    originalUpdate();
+
+    setTimeout(()=>{
+
+        checkBudgetAlert();
+
+    },100);
+
+};
+
+
+/* =====================================================
+   START PIN
+===================================================== */
+
+window.addEventListener("load",()=>{
+
+    addSecuritySettings();
+
+    const savedPIN=
+        localStorage.getItem(LOCK_KEY);
+
+    createPinUI();
+
+    if(savedPIN){
+
+        pinMode="login";
+
+        showPinMessage(
+            lang==="ar"
+            ?"أدخل رمز PIN لفتح مصروفي 🔐"
+            :"Enter your PIN to unlock Masrofi 🔐"
+        );
+
+    }else{
+
+        pinMode="setup";
+
+        showPinMessage(
+            lang==="ar"
+            ?"أنشئ رمز PIN من 4 أرقام لحماية التطبيق 🔐"
+            :"Create a 4-digit PIN to protect the app 🔐"
+        );
+    }
+
+});/* =====================================================
+   MASROFI EXTRA FEATURES
+   PIN LOCK + SMART BUDGET ALERT
+===================================================== */
+
+const LOCK_KEY = "masrofiAppPIN";
+const ALERT_KEY = "masrofiBudgetAlert";
+
+let pinMode = "setup";
+
+/* ---------- PIN SYSTEM ---------- */
+
+function createPinUI(){
+
+    if(document.getElementById("pinOverlay")) return;
+
+    const overlay=document.createElement("div");
+
+    overlay.id="pinOverlay";
+
+    overlay.innerHTML=`
+    <div class="pinBox">
+
+        <div class="pinLogo">💰</div>
+
+        <h2 id="pinTitle">🔐 حماية مصروفي</h2>
+
+        <div id="pinMessage">
+            أنشئ رمز PIN من 4 أرقام
+        </div>
+
+        <input
+            id="pinInput"
+            type="password"
+            inputmode="numeric"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="off">
+
+        <button onclick="submitPIN()" id="pinSubmit">
+            متابعة
+        </button>
+
+        <button
+            onclick="forgotPIN()"
+            class="pinForgot">
+            نسيت الرمز؟
+        </button>
+
+    </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const style=document.createElement("style");
+
+    style.textContent=`
+
+    #pinOverlay{
+        position:fixed;
+        inset:0;
+        z-index:99999;
+        background:#080808;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+    }
+
+    .pinBox{
+        width:100%;
+        max-width:380px;
+        background:#111;
+        border:1px solid #292929;
+        border-radius:25px;
+        padding:28px 20px;
+        text-align:center;
+        box-shadow:0 20px 70px #000;
+    }
+
+    .pinLogo{
+        font-size:55px;
+        margin-bottom:10px;
+    }
+
+    .pinBox h2{
+        margin:5px 0 10px;
+        color:#fff;
+    }
+
+    #pinMessage{
+        color:#999;
+        font-size:14px;
+        margin-bottom:18px;
+    }
+
+    #pinInput{
+        width:100%;
+        height:58px;
+        text-align:center;
+        font-size:28px;
+        letter-spacing:12px;
+        background:#181818;
+        color:#fff;
+        border:1px solid #333;
+        border-radius:15px;
+        outline:none;
+        margin-bottom:12px;
+    }
+
+    #pinInput:focus{
+        border-color:#d71920;
+        box-shadow:0 0 0 3px #d7192030;
+    }
+
+    #pinSubmit{
+        width:100%;
+        height:52px;
+        border:0;
+        border-radius:14px;
+        background:#d71920;
+        color:white;
+        font-size:17px;
+        font-weight:800;
+        cursor:pointer;
+        margin-bottom:8px;
+    }
+
+    .pinForgot{
+        background:transparent!important;
+        color:#888!important;
+        font-size:13px!important;
+        min-height:35px!important;
+    }
+
+    `;
+
+    document.head.appendChild(style);
+
+    document
+    .getElementById("pinInput")
+    .addEventListener("input",function(){
+
+        this.value=this.value.replace(/[^0-9]/g,"");
+
+    });
+
+    setTimeout(()=>{
+        document.getElementById("pinInput")?.focus();
+    },100);
+}
+
+
+function submitPIN(){
+
+    const input=document.getElementById("pinInput");
+
+    if(!input) return;
+
+    const pin=input.value;
+
+    if(!/^\d{4}$/.test(pin)){
+
+        showPinMessage(
+            lang==="ar"
+            ?"أدخل PIN من 4 أرقام."
+            :"Enter a 4-digit PIN."
+        );
+
+        return;
+    }
+
+    const saved=localStorage.getItem(LOCK_KEY);
+
+    /* CREATE PIN */
+
+    if(!saved){
+
+        localStorage.setItem(LOCK_KEY,pin);
+
+        showPinMessage(
+            lang==="ar"
+            ?"تم إنشاء رمز PIN بنجاح ✅"
+            :"PIN created successfully ✅"
+        );
+
+        setTimeout(unlockApp,500);
+
+        return;
+    }
+
+    /* LOGIN */
+
+    if(pin===saved){
+
+        unlockApp();
+
+    }else{
+
+        input.value="";
+
+        showPinMessage(
+            lang==="ar"
+            ?"رمز PIN غير صحيح ❌"
+            :"Wrong PIN ❌"
+        );
+
+        if(navigator.vibrate){
+            navigator.vibrate([100,50,100]);
+        }
+    }
+}
+
+
+function showPinMessage(message){
+
+    const box=document.getElementById("pinMessage");
+
+    if(box){
+        box.textContent=message;
+    }
+}
+
+
+function unlockApp(){
+
+    const overlay=document.getElementById("pinOverlay");
+
+    if(!overlay) return;
+
+    overlay.style.opacity="0";
+    overlay.style.transition=".25s";
+
+    setTimeout(()=>{
+        overlay.remove();
+    },250);
+
+}
+
+
+/* ---------- LOCK APP ---------- */
+
+function lockApp(){
+
+    createPinUI();
+
+    const overlay=document.getElementById("pinOverlay");
+
+    if(overlay){
+        overlay.style.opacity="1";
+        overlay.style.display="flex";
+    }
+
+    const input=document.getElementById("pinInput");
+
+    if(input){
+        input.value="";
+        input.focus();
+    }
+
+    pinMode="login";
+
+    showPinMessage(
+        lang==="ar"
+        ?"أدخل رمز PIN لفتح مصروفي 🔐"
+        :"Enter your PIN to unlock Masrofi 🔐"
+    );
+}
+
+
+/* ---------- CHANGE PIN ---------- */
+
+function changePIN(){
+
+    const oldPin=localStorage.getItem(LOCK_KEY);
+
+    if(!oldPin){
+
+        createPinUI();
+
+        return;
+    }
+
+    const currentPin=prompt(
+        lang==="ar"
+        ?"أدخل رمز PIN الحالي:"
+        :"Enter your current PIN:"
+    );
+
+    if(currentPin!==oldPin){
+
+        alert(
+            lang==="ar"
+            ?"رمز PIN الحالي غير صحيح."
+            :"Current PIN is incorrect."
+        );
+
+        return;
+    }
+
+    const newPin=prompt(
+        lang==="ar"
+        ?"أدخل PIN جديد من 4 أرقام:"
+        :"Enter a new 4-digit PIN:"
+    );
+
+    if(!/^\d{4}$/.test(newPin)){
+
+        alert(
+            lang==="ar"
+            ?"يجب أن يكون PIN من 4 أرقام."
+            :"PIN must contain 4 digits."
+        );
+
+        return;
+    }
+
+    localStorage.setItem(LOCK_KEY,newPin);
+
+    alert(
+        lang==="ar"
+        ?"تم تغيير PIN بنجاح ✅"
+        :"PIN changed successfully ✅"
+    );
+}
+
+
+/* ---------- FORGOT PIN ---------- */
+
+function forgotPIN(){
+
+    const answer=confirm(
+        lang==="ar"
+        ?"إذا نسيت PIN، يمكنك حذف PIN، لكن لن يتم حذف مصاريفك. هل تريد المتابعة؟"
+        :"If you forgot your PIN, you can remove it. Your expenses will NOT be deleted. Continue?"
+    );
+
+    if(!answer) return;
+
+    localStorage.removeItem(LOCK_KEY);
+
+    alert(
+        lang==="ar"
+        ?"تم إلغاء PIN. عند فتح التطبيق مرة أخرى يمكنك إنشاء PIN جديد."
+        :"PIN removed. You can create a new PIN."
+    );
+
+    location.reload();
+}
+
+
+/* =====================================================
+   BUDGET ALERT
+===================================================== */
+
+function checkBudgetAlert(){
+
+    const m=monthData();
+
+    if(!m) return;
+
+    if(!m.budget) return;
+
+    const budget=toBase(
+        m.budget.amount,
+        m.budget.currency
+    );
+
+    const spent=total(m.expenses);
+
+    if(budget<=0) return;
+
+    const percent=(spent/budget)*100;
+
+    const alertKey=
+        current+"_"+Math.floor(percent/5);
+
+    const alreadyShown=
+        localStorage.getItem(ALERT_KEY);
+
+    /* OVER BUDGET */
+
+    if(percent>=100){
+
+        if(alreadyShown!==alertKey){
+
+            localStorage.setItem(
+                ALERT_KEY,
+                alertKey
+            );
+
+            budgetNotification(
+                "over"
+            );
+        }
+
+        return;
+    }
+
+    /* 85% */
+
+    if(percent>=85){
+
+        if(alreadyShown!==alertKey){
+
+            localStorage.setItem(
+                ALERT_KEY,
+                alertKey
+            );
+
+            budgetNotification(
+                "warning"
+            );
+        }
+
+    }
+}
+
+
+function budgetNotification(type){
+
+    const m=monthData();
+
+    const budget=toBase(
+        m.budget.amount,
+        m.budget.currency
+    );
+
+    const spent=total(m.expenses);
+
+    let title;
+    let message;
+
+    if(type==="over"){
+
+        title=
+            lang==="ar"
+            ?"🚨 تجاوزت الميزانية"
+            :"🚨 Budget exceeded";
+
+        message=
+            lang==="ar"
+            ?`صرفك ${money(spent)} من ${money(budget)}. لقد تجاوزت ميزانيتك.`
+            :`You spent ${money(spent)} of ${money(budget)}. You exceeded your budget.`;
+
+    }else{
+
+        title=
+            lang==="ar"
+            ?"⚠️ اقتربت من الميزانية"
+            :"⚠️ Budget warning";
+
+        message=
+            lang==="ar"
+            ?`وصل مصروفك إلى ${Math.round((spent/budget)*100)}% من ميزانيتك.`
+            :`Your spending reached ${Math.round((spent/budget)*100)}% of your budget.`;
+    }
+
+    /* IN-APP ALERT */
+
+    showBudgetPopup(title,message);
+
+    /* DEVICE NOTIFICATION */
+
+    if(
+        "Notification" in window &&
+        Notification.permission==="granted"
+    ){
+
+        try{
+
+            new Notification(title,{
+                body:message,
+                icon:"./icon-192.png",
+                badge:"./icon-192.png"
+            });
+
+        }catch(e){}
+
+    }
+}
+
+
+/* ---------- IN APP POPUP ---------- */
+
+function showBudgetPopup(title,message){
+
+    let popup=document.getElementById(
+        "budgetAlertPopup"
+    );
+
+    if(!popup){
+
+        popup=document.createElement("div");
+
+        popup.id="budgetAlertPopup";
+
+        popup.innerHTML=`
+
+        <div class="budgetAlertBox">
+
+            <div id="budgetAlertIcon">
+                ⚠️
+            </div>
+
+            <h3 id="budgetAlertTitle"></h3>
+
+            <p id="budgetAlertMessage"></p>
+
+            <button onclick="closeBudgetPopup()">
+                OK
+            </button>
+
+        </div>
+        `;
+
+        document.body.appendChild(popup);
+
+        const style=document.createElement("style");
+
+        style.textContent=`
+
+        #budgetAlertPopup{
+            position:fixed;
+            inset:0;
+            z-index:99990;
+            background:#000b;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+
+        .budgetAlertBox{
+            width:100%;
+            max-width:380px;
+            background:#111;
+            border-radius:23px;
+            padding:25px 20px;
+            text-align:center;
+            border:1px solid #522;
+            box-shadow:0 20px 70px #000;
+        }
+
+        .budgetAlertBox #budgetAlertIcon{
+            font-size:48px;
+        }
+
+        .budgetAlertBox h3{
+            color:#fff;
+            margin:10px 0;
+        }
+
+        .budgetAlertBox p{
+            color:#aaa;
+            line-height:1.6;
+        }
+
+        .budgetAlertBox button{
+            margin-top:10px;
+        }
+
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    document.getElementById(
+        "budgetAlertTitle"
+    ).textContent=title;
+
+    document.getElementById(
+        "budgetAlertMessage"
+    ).textContent=message;
+
+    popup.style.display="flex";
+}
+
+
+function closeBudgetPopup(){
+
+    const popup=document.getElementById(
+        "budgetAlertPopup"
+    );
+
+    if(popup){
+        popup.style.display="none";
+    }
+}
+
+
+/* ---------- REQUEST NOTIFICATION ---------- */
+
+function enableBudgetNotifications(){
+
+    if(!("Notification" in window)){
+
+        alert(
+            lang==="ar"
+            ?"هذا الجهاز لا يدعم إشعارات المتصفح."
+            :"This device does not support browser notifications."
+        );
+
+        return;
+    }
+
+    Notification.requestPermission()
+    .then(permission=>{
+
+        if(permission==="granted"){
+
+            alert(
+                lang==="ar"
+                ?"تم تفعيل إشعارات الميزانية 🔔"
+                :"Budget notifications enabled 🔔"
+            );
+
+        }
+
+    });
+}
+
+
+/* =====================================================
+   ADD SECURITY BUTTONS TO SETTINGS
+===================================================== */
+
+function addSecuritySettings(){
+
+    const settings=document.getElementById(
+        "settings"
+    );
+
+    if(!settings) return;
+
+    if(document.getElementById(
+        "securityBox"
+    )) return;
+
+    const box=document.createElement("div");
+
+    box.id="securityBox";
+
+    box.innerHTML=`
+
+    <h3>
+        🔐 ${lang==="ar"?"أمان التطبيق":"App Security"}
+    </h3>
+
+    <div class="small">
+        ${
+            lang==="ar"
+            ?"احمِ مصروفي برمز PIN."
+            :"Protect Masrofi with a PIN."
+        }
+    </div>
+
+    <button
+        class="goldBtn"
+        onclick="changePIN()">
+        🔐 ${
+            lang==="ar"
+            ?"تغيير PIN"
+            :"Change PIN"
+        }
+    </button>
+
+    <button
+        class="blueBtn"
+        onclick="enableBudgetNotifications()">
+        🔔 ${
+            lang==="ar"
+            ?"تفعيل تنبيهات الميزانية"
+            :"Enable Budget Alerts"
+        }
+    </button>
+
+    <button
+        class="secondary"
+        onclick="lockApp()">
+        🔒 ${
+            lang==="ar"
+            ?"قفل التطبيق الآن"
+            :"Lock App Now"
+        }
+    </button>
+
+    `;
+
+    settings.appendChild(box);
+}
+
+
+/* =====================================================
+   PATCH ORIGINAL UPDATE
+===================================================== */
+
+const originalUpdate=window.update;
+
+window.update=function(){
+
+    originalUpdate();
+
+    setTimeout(()=>{
+
+        checkBudgetAlert();
+
+    },100);
+
+};
+
+
+/* =====================================================
+   START PIN
+===================================================== */
+
+window.addEventListener("load",()=>{
+
+    addSecuritySettings();
+
+    const savedPIN=
+        localStorage.getItem(LOCK_KEY);
+
+    createPinUI();
+
+    if(savedPIN){
+
+        pinMode="login";
+
+        showPinMessage(
+            lang==="ar"
+            ?"أدخل رمز PIN لفتح مصروفي 🔐"
+            :"Enter your PIN to unlock Masrofi 🔐"
+        );
+
+    }else{
+
+        pinMode="setup";
+
+        showPinMessage(
+            lang==="ar"
+            ?"أنشئ رمز PIN من 4 أرقام لحماية التطبيق 🔐"
+            :"Create a 4-digit PIN to protect the app 🔐"
+        );
+    }
+
+});
 </script>
 
 </body>
