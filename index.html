@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="مصروفي">
 <link rel="manifest" href="./manifest.json">
-<title>مصروفي 4.1</title>
+<title>مصروفي 5.0</title>
 
 <style>
 *{
@@ -110,13 +110,10 @@ background:#eee;
 color:#111
 }
 
-.goldBtn{
-background:#b38b18
-}
-
-.greenBtn{
-background:#148c49
-}
+.goldBtn{background:#b38b18}
+.blueBtn{background:#2459a8}
+.greenBtn{background:#148c49}
+.printBtn{background:#5d5d5d}
 
 .balance{
 text-align:center
@@ -182,9 +179,13 @@ gap:10px;
 padding:9px 0
 }
 
-.row span{color:#ccc}
+.row span{
+color:#ccc
+}
 
-.row strong{white-space:nowrap}
+.row strong{
+white-space:nowrap
+}
 
 .big{
 font-size:26px;
@@ -212,21 +213,25 @@ transition:width .7s ease
 background:#20d06b
 }
 
-.warning,.success,.smart{
+.warning,
+.success,
+.smart,
+.alarm{
 padding:12px;
 border-radius:13px;
-margin-top:12px;
-display:none
+margin-top:12px
 }
 
 .warning{
 background:#3b2d00;
-color:#ffd85a
+color:#ffd85a;
+display:none
 }
 
 .success{
 background:#0d321d;
-color:#58e58a
+color:#58e58a;
+display:none
 }
 
 .smart{
@@ -234,6 +239,13 @@ display:block;
 background:#191d2d;
 border:1px solid #293653;
 color:#9ebcff
+}
+
+.alarm{
+display:none;
+background:#3a1113;
+border:1px solid #7a2529;
+color:#ff7272
 }
 
 .item{
@@ -328,6 +340,77 @@ margin-bottom:10px
 margin:0
 }
 
+/* DAILY GROUPS */
+
+.day-group{
+background:#181818;
+border-radius:16px;
+padding:12px;
+margin-bottom:12px;
+border:1px solid #292929
+}
+
+.day-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+padding-bottom:9px;
+margin-bottom:5px;
+border-bottom:1px solid #333
+}
+
+.day-title{
+font-weight:800;
+font-size:15px
+}
+
+.day-total{
+font-weight:900;
+color:#ff5b5b;
+white-space:nowrap
+}
+
+.day-item{
+display:flex;
+justify-content:space-between;
+gap:10px;
+padding:10px 2px;
+border-bottom:1px solid #242424
+}
+
+.day-item:last-child{
+border-bottom:0
+}
+
+.day-note{
+font-weight:700;
+word-break:break-word
+}
+
+.day-meta{
+font-size:11px;
+color:#777;
+margin-top:3px
+}
+
+.day-actions{
+text-align:right;
+white-space:nowrap
+}
+
+.history-total{
+background:#181818;
+border-radius:14px;
+padding:13px;
+margin-bottom:12px;
+display:flex;
+justify-content:space-between;
+font-weight:800
+}
+
+/* CALENDAR */
+
 .calendar-head{
 display:grid;
 grid-template-columns:repeat(7,1fr);
@@ -375,13 +458,15 @@ border-color:#d71920
 font-size:12px
 }
 
-.day-total{
+.day-total-calendar{
 font-size:9px;
 color:#ff5b5b;
 margin-top:6px;
 white-space:nowrap;
 overflow:hidden
 }
+
+/* CHART */
 
 .chart{
 display:flex;
@@ -445,6 +530,8 @@ width:75px;
 text-align:right;
 font-size:12px
 }
+
+/* MODAL */
 
 .modal{
 display:none;
@@ -529,16 +616,6 @@ font-size:18px
 display:none
 }
 
-.goalHighlight{
-border:1px solid #b38b18;
-background:#1d1807
-}
-
-.availableBox{
-border:1px solid #d71920;
-background:#1c0c0d
-}
-
 @media(max-width:500px){
 
 .container{
@@ -577,6 +654,71 @@ padding:12px 14px
 margin:0
 }
 
+.day-item{
+flex-direction:column
+}
+
+.day-actions{
+text-align:left
+}
+}
+
+/* PRINT */
+
+@media print{
+
+body{
+background:#fff;
+color:#000
+}
+
+.container{
+max-width:none;
+padding:10px
+}
+
+.card{
+box-shadow:none;
+background:#fff;
+color:#000;
+border:1px solid #ddd
+}
+
+.top,
+#pinLock,
+button,
+input,
+select,
+.modal,
+#settings,
+#backupCard,
+.no-print{
+display:none!important
+}
+
+.small,
+.day-meta,
+.stat-title{
+color:#555
+}
+
+.box,
+.stat,
+.day-group,
+.history-total{
+background:#f5f5f5;
+color:#000
+}
+
+.red{color:#c00}
+.green{color:#087a3c}
+.blue{color:#174f9b}
+.gold{color:#9a7400}
+
+.print-title{
+display:block!important
+}
+
 }
 </style>
 </head>
@@ -584,6 +726,7 @@ margin:0
 <body class="rtl">
 
 <!-- PIN -->
+
 <div id="pinLock">
 
 <div class="pinbox">
@@ -592,7 +735,9 @@ margin:0
 
 <h1 id="pinTitle">مصروفي</h1>
 
-<p id="pinText">أدخل رمز PIN للدخول</p>
+<p id="pinText">
+أدخل رمز PIN للدخول
+</p>
 
 <input
 id="pinInput"
@@ -605,7 +750,10 @@ autocomplete="off">
 
 <div class="pinerror" id="pinError"></div>
 
-<button class="pinbutton" onclick="checkPIN()" id="pinEnter">
+<button
+class="pinbutton"
+onclick="checkPIN()"
+id="pinEnter">
 دخول
 </button>
 
@@ -613,7 +761,13 @@ autocomplete="off">
 
 </div>
 
+
 <div class="container">
+
+<div class="print-title" style="display:none;text-align:center">
+<h1>💰 مصروفي</h1>
+<div id="printDate"></div>
+</div>
 
 <h1 id="title">💰 مصروفي</h1>
 
@@ -623,7 +777,9 @@ autocomplete="off">
 
 <div class="top">
 
-<button onclick="toggleLanguage()" id="langBtn">
+<button
+onclick="toggleLanguage()"
+id="langBtn">
 🇬🇧 English
 </button>
 
@@ -636,23 +792,28 @@ id="settingsBtn">
 
 </div>
 
+
 <!-- MONTH -->
 
 <div class="card">
 
-<h2 id="monthTitle">📅 الشهر</h2>
+<h2 id="monthTitle">
+📅 الشهر
+</h2>
 
 <select id="month" onchange="changeMonth()"></select>
 
 <div class="months">
 
-<button class="secondary"
+<button
+class="secondary"
 onclick="moveMonth(-1)"
 id="prev">
 ⬅️ السابق
 </button>
 
-<button class="secondary"
+<button
+class="secondary"
 onclick="moveMonth(1)"
 id="next">
 التالي ➡️
@@ -662,12 +823,13 @@ id="next">
 
 </div>
 
+
 <!-- DASHBOARD -->
 
 <div class="card balance">
 
 <div class="small" id="balanceTitle">
-الرصيد المتاح بعد التوفير
+الرصيد المتبقي
 </div>
 
 <div class="balance-number" id="balance">
@@ -681,48 +843,42 @@ $0.00
 <div class="stats">
 
 <div class="stat">
-
 <div class="stat-title" id="incomeLabel">
 المدخول
 </div>
-
 <div class="stat-value green" id="income">
 $0
 </div>
-
 </div>
 
 <div class="stat">
-
 <div class="stat-title" id="fixedLabel">
 الثابت
 </div>
-
 <div class="stat-value blue" id="fixed">
 $0
 </div>
-
 </div>
 
 <div class="stat">
-
 <div class="stat-title" id="spentLabel1">
 المصروف
 </div>
-
 <div class="stat-value red" id="spent">
 $0
 </div>
-
 </div>
 
 </div>
 
 <div class="warning" id="warning"></div>
-
 <div class="success" id="success"></div>
 
+<div class="alarm" id="dailyAlarm"></div>
+<div class="alarm" id="monthlyAlarm"></div>
+
 </div>
+
 
 <!-- BUDGET -->
 
@@ -731,6 +887,9 @@ $0
 <h2 id="budgetDashboardTitle">
 🎯 ميزانية المصروف والتوفير
 </h2>
+
+
+<!-- MONTHLY -->
 
 <div class="box">
 
@@ -743,7 +902,6 @@ $0
 </div>
 
 <div class="row">
-
 <span id="spentSoFar">
 المصروف حتى الآن
 </span>
@@ -751,11 +909,9 @@ $0
 <strong class="red" id="spentValue">
 $0
 </strong>
-
 </div>
 
 <div class="row">
-
 <span id="remainingBudget">
 المتبقي للمصروف
 </span>
@@ -763,7 +919,6 @@ $0
 <strong class="gold" id="remainingValue">
 $0
 </strong>
-
 </div>
 
 <div class="progress">
@@ -776,12 +931,60 @@ $0
 
 </div>
 
-<!-- SAVINGS GOAL -->
 
-<div class="box goalHighlight">
+<!-- DAILY LIMIT -->
+
+<div class="box">
+
+<div class="small" id="dailyLimitDashLabel">
+حد المصروف اليومي
+</div>
+
+<div class="big gold" id="dailyLimitValue">
+$0
+</div>
+
+<div class="row">
+
+<span id="todaySpentLabel">
+مصروف اليوم
+</span>
+
+<strong class="red" id="todaySpentValue">
+$0
+</strong>
+
+</div>
+
+<div class="row">
+
+<span id="todayRemainingLabel">
+المتبقي اليوم
+</span>
+
+<strong class="gold" id="todayRemainingValue">
+$0
+</strong>
+
+</div>
+
+<div class="progress">
+<div class="bar" id="dailyBar"></div>
+</div>
+
+<div class="small" id="dailyPercent">
+0%
+</div>
+
+</div>
+
+
+<!-- SAVINGS -->
+
+<div class="box">
 
 <div class="small" id="goalLabel">
-🎯 هدف التوفير الشهري
+🎯 هدف التوفير
 </div>
 
 <div class="big green" id="goalValue">
@@ -791,7 +994,7 @@ $0
 <div class="row">
 
 <span id="currentSavingsLabel">
-التوفير الممكن حالياً
+التوفير الحالي
 </span>
 
 <strong class="green" id="savingsValue">
@@ -810,25 +1013,8 @@ $0
 
 </div>
 
-<!-- AVAILABLE -->
-
-<div class="box availableBox">
-
-<div class="small" id="availableLabel">
-💰 الرصيد المتاح بعد التوفير
 </div>
 
-<div class="big" id="availableBig">
-$0
-</div>
-
-<div class="small" id="formulaLabel">
-المدخول − الثابت − المصروف اليومي − هدف التوفير
-</div>
-
-</div>
-
-</div>
 
 <!-- REPORT -->
 
@@ -861,12 +1047,12 @@ $0
 </div>
 
 <div class="row">
-<span id="rGoalLabel">🎯 هدف التوفير</span>
+<span id="rGoalLabel">هدف التوفير</span>
 <strong class="gold" id="rGoal">$0</strong>
 </div>
 
 <div class="row">
-<span id="rBalanceLabel">الرصيد المتاح</span>
+<span id="rBalanceLabel">الرصيد المتبقي</span>
 <strong id="rBalance">$0</strong>
 </div>
 
@@ -878,6 +1064,7 @@ $0
 </div>
 
 </div>
+
 
 <!-- SMART -->
 
@@ -927,6 +1114,7 @@ $0
 
 </div>
 
+
 <!-- CALENDAR -->
 
 <div class="card">
@@ -936,6 +1124,7 @@ $0
 </h2>
 
 <div class="calendar-head">
+
 <div>Sun</div>
 <div>Mon</div>
 <div>Tue</div>
@@ -943,6 +1132,7 @@ $0
 <div>Thu</div>
 <div>Fri</div>
 <div>Sat</div>
+
 </div>
 
 <div class="calendar" id="calendar"></div>
@@ -952,6 +1142,7 @@ $0
 </div>
 
 </div>
+
 
 <!-- ADVANCED -->
 
@@ -975,9 +1166,10 @@ $0
 
 </div>
 
+
 <!-- BACKUP -->
 
-<div class="card">
+<div class="card" id="backupCard">
 
 <h2 id="backupTitle">
 💾 النسخ الاحتياطي والاستعادة
@@ -1009,6 +1201,7 @@ id="resetBtn">
 
 </div>
 
+
 <!-- SETTINGS -->
 
 <div class="card" id="settings">
@@ -1021,7 +1214,9 @@ id="resetBtn">
 العملة الأساسية
 </label>
 
-<select id="baseCurrency" onchange="changeBase()">
+<select
+id="baseCurrency"
+onchange="changeBase()">
 
 <option value="USD">
 🇺🇸 USD — US Dollar
@@ -1029,10 +1224,6 @@ id="resetBtn">
 
 <option value="CAD">
 🇨🇦 CAD — Canadian Dollar
-</option>
-
-<option value="EUR">
-🇪🇺 EUR — Euro
 </option>
 
 <option value="LBP">
@@ -1044,6 +1235,7 @@ id="resetBtn">
 </option>
 
 </select>
+
 
 <h3 id="ratesTitle">
 💱 أسعار الصرف
@@ -1060,11 +1252,6 @@ placeholder="CAD per 1 USD">
 
 <input
 type="number"
-id="eur"
-placeholder="EUR per 1 USD">
-
-<input
-type="number"
 id="lbp"
 placeholder="LBP per 1 USD">
 
@@ -1073,11 +1260,12 @@ type="number"
 id="syp"
 placeholder="SYP per 1 USD">
 
-<button onclick="saveRates()" id="ratesBtn">
+<button
+onclick="saveRates()"
+id="ratesBtn">
 حفظ أسعار الصرف
 </button>
 
-<!-- PIN -->
 
 <h3>
 🔐 PIN Security
@@ -1087,7 +1275,9 @@ placeholder="SYP per 1 USD">
 ضع PIN لحماية مصروفي عند فتح التطبيق.
 </div>
 
-<select id="pinEnabled" onchange="togglePinSetting()">
+<select
+id="pinEnabled"
+onchange="togglePinSetting()">
 
 <option value="yes">
 🔐 PIN ON
@@ -1126,6 +1316,7 @@ id="savePinBtn">
 
 </div>
 
+
 <!-- INCOME -->
 
 <div class="card">
@@ -1143,19 +1334,21 @@ placeholder="أدخل المدخول">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
 </select>
 
-<button onclick="saveIncome()" id="incomeBtn">
+<button
+onclick="saveIncome()"
+id="incomeBtn">
 حفظ المدخول
 </button>
 
 <div class="small" id="incomeSaved"></div>
 
 </div>
+
 
 <!-- BUDGET -->
 
@@ -1178,13 +1371,14 @@ placeholder="مثلاً 500">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
 </select>
 
-<button onclick="saveBudget()" id="budgetBtn">
+<button
+onclick="saveBudget()"
+id="budgetBtn">
 حفظ الميزانية
 </button>
 
@@ -1192,28 +1386,28 @@ placeholder="مثلاً 500">
 
 </div>
 
-<!-- SAVINGS GOAL -->
+
+<!-- DAILY LIMIT -->
 
 <div class="card">
 
-<h2 id="goalInputTitle">
-🎯 هدف التوفير الشهري
+<h2 id="dailyLimitTitle">
+🚨 حد المصروف اليومي
 </h2>
 
-<div class="small" id="goalHelp">
-المبلغ الذي تريد الاحتفاظ به وعدم صرفه هذا الشهر.
+<div class="small" id="dailyLimitHelp">
+إذا تجاوزت هذا المبلغ في يوم واحد سيظهر تنبيه.
 </div>
 
 <input
 type="number"
-id="goalInput"
-placeholder="مثلاً 300">
+id="dailyLimitInput"
+placeholder="مثلاً 20">
 
-<select id="goalCurrency">
+<select id="dailyLimitCurrency">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
@@ -1221,25 +1415,26 @@ placeholder="مثلاً 300">
 
 <button
 class="goldBtn"
-onclick="saveGoal()"
-id="goalBtn">
-حفظ هدف التوفير
+onclick="saveDailyLimit()"
+id="dailyLimitBtn">
+حفظ الحد اليومي
 </button>
 
-<div class="small" id="goalSaved"></div>
+<div class="small" id="dailyLimitSaved"></div>
 
 </div>
+
 
 <!-- FIXED -->
 
 <div class="card">
 
 <h2 id="fixedTitle">
-🏠 المصاريف الثابتة الشهرية
+🏠 المصاريف الشهرية الثابتة
 </h2>
 
 <div class="small" id="fixedHelp">
-هذه المصاريف تُحسب ضمن مصاريف الشهر مثل الإيجار والكهرباء والإنترنت.
+هذه المصاريف تتكرر شهرياً ويتم خصمها من الرصيد.
 </div>
 
 <input
@@ -1255,7 +1450,6 @@ placeholder="المبلغ">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
@@ -1273,13 +1467,16 @@ placeholder="المبلغ">
 
 </select>
 
-<button onclick="addFixed()" id="fixedBtn">
+<button
+onclick="addFixed()"
+id="fixedBtn">
 إضافة مصروف ثابت
 </button>
 
 <div id="fixedList"></div>
 
 </div>
+
 
 <!-- DAILY -->
 
@@ -1298,7 +1495,6 @@ placeholder="المبلغ">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
@@ -1320,11 +1516,14 @@ placeholder="المبلغ">
 id="dailyNote"
 placeholder="مثلاً قهوة">
 
-<button onclick="addDaily()" id="dailyBtn">
+<button
+onclick="addDaily()"
+id="dailyBtn">
 إضافة مصروف
 </button>
 
 </div>
+
 
 <!-- HISTORY -->
 
@@ -1333,23 +1532,31 @@ placeholder="مثلاً قهوة">
 <div class="section-head">
 
 <h2 id="historyTitle">
-📋 الحركات
+📋 الحركات اليومية
 </h2>
 
 <button
-class="delete smallbtn"
+class="printBtn smallbtn"
+onclick="printHistory()"
+id="printBtn">
+🖨️ Print
+</button>
+
+</div>
+
+<button
+class="delete smallbtn no-print"
 onclick="clearMonth()"
 id="clearBtn">
 مسح الشهر
 </button>
-
-</div>
 
 <div id="history"></div>
 
 </div>
 
 </div>
+
 
 <!-- EDIT -->
 
@@ -1369,7 +1576,6 @@ id="editAmount">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
-<option value="EUR">🇪🇺 EUR</option>
 <option value="LBP">🇱🇧 LBP</option>
 <option value="SYP">🇸🇾 SYP</option>
 
@@ -1389,7 +1595,9 @@ id="editAmount">
 
 </select>
 
-<button onclick="saveEdit()" id="saveEditBtn">
+<button
+onclick="saveEdit()"
+id="saveEditBtn">
 حفظ
 </button>
 
@@ -1404,186 +1612,412 @@ id="cancelBtn">
 
 </div>
 
+
 <script>
 
-/* =========================
-TRANSLATIONS
-========================= */
+/* =====================================================
+   TRANSLATIONS
+===================================================== */
 
 const T={
 
 ar:{
+
 title:"💰 مصروفي",
 subtitle:"إدارة ذكية لمصروفك وتوفيرك",
 lang:"🇬🇧 English",
 settings:"⚙️ الإعدادات",
+
 month:"📅 الشهر",
 prev:"⬅️ السابق",
 next:"التالي ➡️",
-balance:"الرصيد المتاح بعد التوفير",
+
+balance:"الرصيد المتبقي",
 base:"العملة الأساسية:",
+
 income:"المدخول",
 fixed:"الثابت",
 spent:"المصروف",
+
 budgetDash:"🎯 ميزانية المصروف والتوفير",
+
 budget:"ميزانية المصروف الشهري",
 spentSoFar:"المصروف حتى الآن",
 remaining:"المتبقي للمصروف",
-goal:"🎯 هدف التوفير الشهري",
-savings:"التوفير الممكن حالياً",
-available:"💰 الرصيد المتاح بعد التوفير",
-formula:"المدخول − الثابت − المصروف اليومي − هدف التوفير",
+
+dailyLimitDash:"حد المصروف اليومي",
+todaySpent:"مصروف اليوم",
+todayRemaining:"المتبقي اليوم",
+
+goal:"🎯 هدف التوفير",
+savings:"التوفير الحالي",
+
 report:"📊 تقرير الشهر",
 total:"إجمالي المصاريف",
+goalReport:"هدف التوفير",
+
 rates:"💱 أسعار الصرف",
 ratesHelp:"قيمة العملة مقابل 1 دولار أمريكي",
 saveRates:"حفظ أسعار الصرف",
+
 incomeMonth:"💵 مدخول الشهر",
 saveIncome:"حفظ المدخول",
+
 budgetMonth:"🎯 ميزانية المصروف الشهرية",
 budgetHelp:"المبلغ الذي تسمح لنفسك أن تصرفه خلال الشهر.",
 saveBudget:"حفظ الميزانية",
-goalInput:"🎯 هدف التوفير الشهري",
-goalHelp:"المبلغ الذي تريد الاحتفاظ به وعدم صرفه هذا الشهر.",
-saveGoal:"حفظ هدف التوفير",
-fixedTitle:"🏠 المصاريف الثابتة الشهرية",
-fixedHelp:"هذه المصاريف تُحسب ضمن مصاريف الشهر مثل الإيجار والكهرباء والإنترنت.",
+
+dailyLimitTitle:"🚨 حد المصروف اليومي",
+dailyLimitHelp:"إذا تجاوزت هذا المبلغ في يوم واحد سيظهر تنبيه.",
+saveDailyLimit:"حفظ الحد اليومي",
+
+fixedTitle:"🏠 المصاريف الشهرية الثابتة",
+fixedHelp:"هذه المصاريف تتكرر شهرياً ويتم خصمها من الرصيد.",
 addFixed:"إضافة مصروف ثابت",
+
 daily:"🛒 المصروف اليومي",
 addDaily:"إضافة مصروف",
-history:"📋 الحركات",
+
+history:"📋 الحركات اليومية",
+print:"🖨️ Print",
 clear:"مسح الشهر",
+
 edit:"تعديل",
 del:"حذف",
+
 valid:"يرجى إدخال مبلغ صحيح.",
 name:"يرجى إدخال اسم ومبلغ صحيح.",
+
 over:"🚨 تجاوزت ميزانية المصروف!",
 low:"⚠️ اقتربت من حد الميزانية.",
 good:"✅ ممتاز! صرفك تحت السيطرة.",
+
+dailyOver:"🚨 تجاوزت حد المصروف اليومي!",
+dailyDiff:"الزيادة عن الحد اليومي:",
+monthlyOver:"🚨 تجاوزت ميزانية الشهر!",
+monthlyDiff:"الزيادة عن الميزانية الشهرية:",
+
 confirm:"هل أنت متأكد من مسح هذا الشهر؟",
+
 smartTitle:"🧠 الإنفاق الذكي",
+
 calendar:"📅 التقويم",
 calendarHint:"اضغط على يوم لرؤية مصاريفه",
+
 advanced:"📈 التحليل المتقدم",
 category:"المصاريف حسب التصنيف",
 chart:"المصروف خلال الشهر",
+
 backup:"💾 النسخ الاحتياطي والاستعادة",
 backupHelp:"احفظ نسخة من بيانات مصروفي أو استعد نسخة قديمة.",
 backupBtn:"💾 Backup",
 reset:"🗑️ حذف كل البيانات",
+
 average:"متوسط المصروف اليومي",
 largest:"أكبر مصروف",
 days:"الأيام المتبقية",
+
 smartGood:"ممتاز! مصروفك تحت السيطرة.",
 smartWarning:"انتبه! أنت تقترب من ميزانية الشهر.",
 smartOver:"تحذير! لقد تجاوزت ميزانية المصروف.",
+
 noExpenses:"لا توجد حركات",
 noFixed:"لا توجد مصاريف ثابتة",
-dayExpenses:"مصاريف هذا اليوم"
+
+dayExpenses:"مصاريف هذا اليوم",
+dayTotal:"مجموع اليوم",
+monthTotal:"مجموع مصاريف الشهر",
+
+monthlyRemaining:"المتبقي بعد الثابت والتوفير",
+savingsTarget:"هدف التوفير",
+
+printDate:"تاريخ الطباعة:"
+
 },
 
 en:{
+
 title:"💰 My Expenses",
 subtitle:"Smart Spending & Savings Manager",
 lang:"🇱🇧 العربية",
 settings:"⚙️ Settings",
+
 month:"📅 Month",
 prev:"⬅️ Previous",
 next:"Next ➡️",
-balance:"Available Balance After Savings",
+
+balance:"Remaining Balance",
 base:"Base currency:",
+
 income:"Income",
 fixed:"Fixed",
 spent:"Spent",
+
 budgetDash:"🎯 Spending Budget & Savings",
+
 budget:"Monthly Spending Budget",
 spentSoFar:"Spent so far",
 remaining:"Budget remaining",
-goal:"🎯 Monthly Savings Goal",
-savings:"Current possible savings",
-available:"💰 Available Balance After Savings",
-formula:"Income − Fixed − Daily Spending − Savings Goal",
+
+dailyLimitDash:"Daily Spending Limit",
+todaySpent:"Today's spending",
+todayRemaining:"Remaining today",
+
+goal:"🎯 Savings Goal",
+savings:"Current savings",
+
 report:"📊 Monthly Report",
 total:"Total expenses",
+goalReport:"Savings goal",
+
 rates:"💱 Exchange Rates",
 ratesHelp:"Value of each currency per 1 USD",
 saveRates:"Save Exchange Rates",
+
 incomeMonth:"💵 Monthly Income",
 saveIncome:"Save Income",
+
 budgetMonth:"🎯 Monthly Spending Budget",
 budgetHelp:"The amount you allow yourself to spend during the month.",
 saveBudget:"Save Budget",
-goalInput:"🎯 Monthly Savings Goal",
-goalHelp:"The amount you want to keep and not spend this month.",
-saveGoal:"Save Savings Goal",
+
+dailyLimitTitle:"🚨 Daily Spending Limit",
+dailyLimitHelp:"An alert appears when you exceed this amount in one day.",
+saveDailyLimit:"Save Daily Limit",
+
 fixedTitle:"🏠 Monthly Fixed Expenses",
-fixedHelp:"These expenses are counted every month, such as rent, electricity and internet.",
+fixedHelp:"These expenses repeat monthly and are deducted from your balance.",
 addFixed:"Add Fixed Expense",
+
 daily:"🛒 Daily Expense",
 addDaily:"Add Expense",
-history:"📋 Transactions",
+
+history:"📋 Daily Transactions",
+print:"🖨️ Print",
 clear:"Clear Month",
+
 edit:"Edit",
 del:"Delete",
+
 valid:"Please enter a valid amount.",
 name:"Please enter a valid name and amount.",
+
 over:"🚨 You exceeded your spending budget!",
 low:"⚠️ You are close to your budget limit.",
 good:"✅ Great! Your spending is under control.",
+
+dailyOver:"🚨 You exceeded your daily spending limit!",
+dailyDiff:"Amount over daily limit:",
+monthlyOver:"🚨 You exceeded your monthly budget!",
+monthlyDiff:"Amount over monthly budget:",
+
 confirm:"Are you sure you want to clear this month?",
+
 smartTitle:"🧠 Smart Spending",
+
 calendar:"📅 Calendar",
 calendarHint:"Tap a day to see its expenses",
+
 advanced:"📈 Advanced Analysis",
 category:"Expenses by Category",
 chart:"Spending During Month",
+
 backup:"💾 Backup & Restore",
 backupHelp:"Save a copy of your Masrofi data or restore an old copy.",
 backupBtn:"💾 Backup",
 reset:"🗑️ Reset All Data",
+
 average:"Daily spending average",
 largest:"Largest expense",
 days:"Days remaining",
+
 smartGood:"Great! Your spending is under control.",
 smartWarning:"Watch out! You are getting close to your monthly budget.",
 smartOver:"Warning! You exceeded your spending budget.",
+
 noExpenses:"No transactions",
 noFixed:"No fixed expenses",
-dayExpenses:"Expenses for this day"
+
+dayExpenses:"Expenses for this day",
+dayTotal:"Day total",
+monthTotal:"Monthly spending total",
+
+monthlyRemaining:"Remaining after fixed expenses & savings",
+savingsTarget:"Savings goal",
+
+printDate:"Print date:"
+
 }
 
 };
 
-let lang=localStorage.getItem("language")||"ar";
+
+/* =====================================================
+   DATA
+===================================================== */
+
+let lang=
+localStorage.getItem("language")||"ar";
 
 let current=
 localStorage.getItem("currentMonth")||
 new Date().toISOString().slice(0,7);
 
 let data=
-JSON.parse(localStorage.getItem("financeData")||"{}");
+JSON.parse(
+localStorage.getItem("financeData")||"{}"
+);
 
 let settingsData=
 JSON.parse(
 localStorage.getItem("settings")||
-'{"baseCurrency":"USD","rates":{"USD":1,"CAD":1,"EUR":1,"LBP":1,"SYP":1},"pinEnabled":true,"pin":""}'
+'{"baseCurrency":"USD","rates":{"USD":1,"CAD":1,"LBP":1,"SYP":1},"pinEnabled":true,"pin":""}'
 );
 
 let editId=null;
 
-/* =========================
-PIN
-========================= */
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function t(k){
+return T[lang][k];
+}
+
+function monthData(){
+
+if(!data[current]){
+
+data[current]={
+income:null,
+budget:null,
+dailyLimit:null,
+fixed:[],
+expenses:[]
+};
+
+}
+
+if(!data[current].fixed)
+data[current].fixed=[];
+
+if(!data[current].expenses)
+data[current].expenses=[];
+
+return data[current];
+}
+
+function save(){
+
+localStorage.setItem(
+"financeData",
+JSON.stringify(data)
+);
+
+}
+
+function saveSettings(){
+
+localStorage.setItem(
+"settings",
+JSON.stringify(settingsData)
+);
+
+}
+
+function escape(x){
+
+return String(x).replace(
+/[&<>"']/g,
+m=>({
+
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+
+}[m])
+
+);
+
+}
+
+
+/* =====================================================
+   CURRENCY
+===================================================== */
+
+function toUSD(a,c){
+
+let r=Number(settingsData.rates[c]);
+
+return r>0?Number(a)/r:0;
+
+}
+
+function toBase(a,c){
+
+return toUSD(a,c)*
+Number(
+settingsData.rates[
+settingsData.baseCurrency
+]||1
+);
+
+}
+
+function money(a,c=settingsData.baseCurrency){
+
+a=Number(a)||0;
+
+if(c==="USD")
+return "$"+a.toFixed(2);
+
+if(c==="CAD")
+return "CA$"+a.toFixed(2);
+
+if(c==="LBP")
+return "LBP "+
+Math.round(a).toLocaleString("en-US");
+
+if(c==="SYP")
+return "SYP "+
+Math.round(a).toLocaleString("en-US");
+
+return c+" "+a.toFixed(2);
+
+}
+
+function total(list){
+
+return list.reduce(
+(s,x)=>s+toBase(x.amount,x.currency),
+0
+);
+
+}
+
+
+/* =====================================================
+   PIN
+===================================================== */
 
 function pinEnabled(){
+
 return settingsData.pinEnabled!==false;
+
 }
 
 function showPinLock(){
 
 if(!pinEnabled()){
 
-document.getElementById("pinLock").style.display="none";
+document.getElementById(
+"pinLock"
+).style.display="none";
+
 return;
 
 }
@@ -1592,15 +2026,24 @@ let pin=settingsData.pin||"";
 
 if(!pin){
 
-document.getElementById("pinLock").style.display="none";
+document.getElementById(
+"pinLock"
+).style.display="none";
+
 return;
 
 }
 
-document.getElementById("pinLock").style.display="flex";
+document.getElementById(
+"pinLock"
+).style.display="flex";
 
 setTimeout(()=>{
-document.getElementById("pinInput").focus();
+
+document.getElementById(
+"pinInput"
+).focus();
+
 },300);
 
 }
@@ -1608,57 +2051,92 @@ document.getElementById("pinInput").focus();
 function checkPIN(){
 
 let input=
-document.getElementById("pinInput").value;
+document.getElementById(
+"pinInput"
+).value;
 
 let correct=settingsData.pin||"";
 
 if(input===correct){
 
-document.getElementById("pinLock").style.display="none";
+document.getElementById(
+"pinLock"
+).style.display="none";
 
-document.getElementById("pinInput").value="";
+document.getElementById(
+"pinInput"
+).value="";
 
-document.getElementById("pinError").textContent="";
+document.getElementById(
+"pinError"
+).textContent="";
 
 }else{
 
-document.getElementById("pinError").textContent=
-lang==="ar"?"❌ PIN غير صحيح":"❌ Wrong PIN";
+document.getElementById(
+"pinError"
+).textContent=
+lang==="ar"
+?"❌ PIN غير صحيح"
+:"❌ Wrong PIN";
 
-document.getElementById("pinInput").value="";
+document.getElementById(
+"pinInput"
+).value="";
 
 }
 
 }
 
-document.getElementById("pinInput").addEventListener(
+document.getElementById(
+"pinInput"
+).addEventListener(
 "keydown",
 e=>{
-if(e.key==="Enter")checkPIN();
+
+if(e.key==="Enter")
+checkPIN();
+
 }
 );
 
 function togglePinSetting(){
 
 let enabled=
-document.getElementById("pinEnabled").value==="yes";
+document.getElementById(
+"pinEnabled"
+).value==="yes";
 
 settingsData.pinEnabled=enabled;
 
 saveSettings();
 
-document.getElementById("pinSettingsBox").style.display=
+document.getElementById(
+"pinSettingsBox"
+).style.display=
 enabled?"block":"none";
+
+if(!enabled){
+
+document.getElementById(
+"pinLock"
+).style.display="none";
+
+}
 
 }
 
 function savePIN(){
 
 let p=
-document.getElementById("newPin").value.trim();
+document.getElementById(
+"newPin"
+).value.trim();
 
 let c=
-document.getElementById("confirmPin").value.trim();
+document.getElementById(
+"confirmPin"
+).value.trim();
 
 if(!/^\d{4,6}$/.test(p)){
 
@@ -1689,149 +2167,31 @@ settingsData.pinEnabled=true;
 
 saveSettings();
 
-document.getElementById("newPin").value="";
-document.getElementById("confirmPin").value="";
+document.getElementById(
+"newPin"
+).value="";
+
+document.getElementById(
+"confirmPin"
+).value="";
 
 alert(
 lang==="ar"
-?"تم حفظ PIN بنجاح 🔐":
-"PIN saved successfully 🔐"
+?"تم حفظ PIN بنجاح 🔐"
+:"PIN saved successfully 🔐"
 );
 
 }
 
-/* =========================
-HELPERS
-========================= */
 
-function t(k){
-return T[lang][k];
-}
-
-function monthData(){
-
-if(!data[current]){
-
-data[current]={
-income:null,
-budget:null,
-savingsGoal:null,
-fixed:[],
-expenses:[]
-};
-
-}
-
-if(!data[current].fixed)
-data[current].fixed=[];
-
-if(!data[current].expenses)
-data[current].expenses=[];
-
-return data[current];
-
-}
-
-function save(){
-
-localStorage.setItem(
-"financeData",
-JSON.stringify(data)
-);
-
-}
-
-function saveSettings(){
-
-localStorage.setItem(
-"settings",
-JSON.stringify(settingsData)
-);
-
-}
-
-function escape(x){
-
-return String(x).replace(
-/[&<>"']/g,
-m=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-}[m])
-);
-
-}
-
-/* =========================
-CURRENCY
-========================= */
-
-function toUSD(a,c){
-
-let r=Number(
-settingsData.rates[c]
-);
-
-return r>0?Number(a)/r:0;
-
-}
-
-function toBase(a,c){
-
-return toUSD(a,c)*
-Number(
-settingsData.rates[
-settingsData.baseCurrency
-]||1
-);
-
-}
-
-function money(a,c=settingsData.baseCurrency){
-
-a=Number(a)||0;
-
-if(c==="USD")
-return "$"+a.toFixed(2);
-
-if(c==="CAD")
-return "CA$"+a.toFixed(2);
-
-if(c==="EUR")
-return "€"+a.toFixed(2);
-
-if(c==="LBP")
-return "LBP "+
-Math.round(a).toLocaleString("en-US");
-
-if(c==="SYP")
-return "SYP "+
-Math.round(a).toLocaleString("en-US");
-
-return c+" "+a.toFixed(2);
-
-}
-
-function total(list){
-
-return list.reduce(
-(s,x)=>
-s+toBase(x.amount,x.currency),
-0
-);
-
-}
-
-/* =========================
-MONTHS
-========================= */
+/* =====================================================
+   MONTHS
+===================================================== */
 
 function months(){
 
-let s=document.getElementById("month");
+let s=
+document.getElementById("month");
 
 s.innerHTML="";
 
@@ -1843,13 +2203,16 @@ for(let i=0;i<25;i++){
 
 let x=new Date(d);
 
-x.setMonth(d.getMonth()+i);
+x.setMonth(
+d.getMonth()+i
+);
 
 let v=
 x.getFullYear()+"-"+
 String(x.getMonth()+1).padStart(2,"0");
 
-let o=document.createElement("option");
+let o=
+document.createElement("option");
 
 o.value=v;
 
@@ -1873,7 +2236,9 @@ s.value=current;
 function changeMonth(){
 
 current=
-document.getElementById("month").value;
+document.getElementById(
+"month"
+).value;
 
 localStorage.setItem(
 "currentMonth",
@@ -1888,9 +2253,12 @@ update();
 
 function moveMonth(n){
 
-let d=new Date(current+"-01");
+let d=
+new Date(current+"-01");
 
-d.setMonth(d.getMonth()+n);
+d.setMonth(
+d.getMonth()+n
+);
 
 current=
 d.getFullYear()+"-"+
@@ -1907,14 +2275,18 @@ update();
 
 }
 
-/* =========================
-INCOME
-========================= */
+
+/* =====================================================
+   INCOME
+===================================================== */
 
 function saveIncome(){
 
-let a=Number(
-document.getElementById("incomeInput").value
+let a=
+Number(
+document.getElementById(
+"incomeInput"
+).value
 );
 
 if(a<=0){
@@ -1927,25 +2299,33 @@ return;
 monthData().income={
 amount:a,
 currency:
-document.getElementById("incomeCurrency").value
+document.getElementById(
+"incomeCurrency"
+).value
 };
 
 save();
 
-document.getElementById("incomeInput").value="";
+document.getElementById(
+"incomeInput"
+).value="";
 
 update();
 
 }
 
-/* =========================
-BUDGET
-========================= */
+
+/* =====================================================
+   MONTHLY BUDGET
+===================================================== */
 
 function saveBudget(){
 
-let a=Number(
-document.getElementById("budgetInput").value
+let a=
+Number(
+document.getElementById(
+"budgetInput"
+).value
 );
 
 if(a<=0){
@@ -1958,61 +2338,77 @@ return;
 monthData().budget={
 amount:a,
 currency:
-document.getElementById("budgetCurrency").value
+document.getElementById(
+"budgetCurrency"
+).value
 };
 
 save();
 
-document.getElementById("budgetInput").value="";
+document.getElementById(
+"budgetInput"
+).value="";
 
 update();
 
 }
 
-/* =========================
-SAVINGS GOAL
-========================= */
 
-function saveGoal(){
+/* =====================================================
+   DAILY LIMIT
+===================================================== */
 
-let a=Number(
-document.getElementById("goalInput").value
+function saveDailyLimit(){
+
+let a=
+Number(
+document.getElementById(
+"dailyLimitInput"
+).value
 );
 
-if(a<0){
+if(a<=0){
 
 alert(t("valid"));
 return;
 
 }
 
-monthData().savingsGoal={
+monthData().dailyLimit={
 amount:a,
 currency:
-document.getElementById("goalCurrency").value
+document.getElementById(
+"dailyLimitCurrency"
+).value
 };
 
 save();
 
-document.getElementById("goalInput").value="";
+document.getElementById(
+"dailyLimitInput"
+).value="";
 
 update();
 
 }
 
-/* =========================
-FIXED
-========================= */
+
+/* =====================================================
+   FIXED MONTHLY EXPENSES
+===================================================== */
 
 function addFixed(){
 
 let name=
-document.getElementById("fixedName")
-.value.trim();
+document.getElementById(
+"fixedName"
+).value.trim();
 
 let a=
 Number(
-document.getElementById("fixedAmount").value
+document.getElementById(
+"fixedAmount"
+).value
 );
 
 if(!name||a<=0){
@@ -2031,17 +2427,26 @@ name:name,
 amount:a,
 
 currency:
-document.getElementById("fixedCurrency").value,
+document.getElementById(
+"fixedCurrency"
+).value,
 
 category:
-document.getElementById("fixedCategory").value
+document.getElementById(
+"fixedCategory"
+).value
 
 });
 
 save();
 
-document.getElementById("fixedName").value="";
-document.getElementById("fixedAmount").value="";
+document.getElementById(
+"fixedName"
+).value="";
+
+document.getElementById(
+"fixedAmount"
+).value="";
 
 update();
 
@@ -2055,6 +2460,7 @@ x=>x.id!==id
 );
 
 save();
+
 update();
 
 }
@@ -2068,16 +2474,22 @@ x=>x.id===id
 
 if(!x)return;
 
-let n=prompt(
-lang==="ar"?"اسم المصروف":"Expense name",
+let n=
+prompt(
+lang==="ar"
+?"اسم المصروف"
+:"Expense name",
 x.name
 );
 
 if(n===null)return;
 
-let a=Number(
+let a=
+Number(
 prompt(
-lang==="ar"?"المبلغ":"Amount",
+lang==="ar"
+?"المبلغ"
+:"Amount",
 x.amount
 )
 );
@@ -2093,19 +2505,23 @@ x.name=n.trim();
 x.amount=a;
 
 save();
+
 update();
 
 }
 
-/* =========================
-DAILY
-========================= */
+
+/* =====================================================
+   DAILY EXPENSE
+===================================================== */
 
 function addDaily(){
 
 let a=
 Number(
-document.getElementById("dailyAmount").value
+document.getElementById(
+"dailyAmount"
+).value
 );
 
 if(a<=0){
@@ -2124,45 +2540,69 @@ id:Date.now(),
 amount:a,
 
 currency:
-document.getElementById("dailyCurrency").value,
+document.getElementById(
+"dailyCurrency"
+).value,
 
 category:
-document.getElementById("dailyCategory").value,
+document.getElementById(
+"dailyCategory"
+).value,
 
 note:
-document.getElementById("dailyNote").value.trim()||
+document.getElementById(
+"dailyNote"
+).value.trim()||
 (
-lang==="ar"?
-"مصروف يومي":
-"Daily Expense"
+lang==="ar"
+?"مصروف يومي"
+:"Daily Expense"
 ),
 
-date:now.toISOString().slice(0,10),
+date:
+now.toISOString().slice(0,10),
 
 displayDate:
 now.toLocaleDateString(
-lang==="ar"?"ar-LB":"en-US"
+lang==="ar"
+?"ar-LB"
+:"en-US"
 ),
 
 time:
 now.toLocaleTimeString(
-lang==="ar"?"ar-LB":"en-US",
+lang==="ar"
+?"ar-LB"
+:"en-US",
 {
 hour:"2-digit",
 minute:"2-digit"
 }
+
 )
 
 });
 
 save();
 
-document.getElementById("dailyAmount").value="";
-document.getElementById("dailyNote").value="";
+document.getElementById(
+"dailyAmount"
+).value="";
+
+document.getElementById(
+"dailyNote"
+).value="";
 
 update();
 
+checkAlarms();
+
 }
+
+
+/* =====================================================
+   DAILY DELETE / EDIT
+===================================================== */
 
 function deleteDaily(id){
 
@@ -2172,6 +2612,7 @@ x=>x.id!==id
 );
 
 save();
+
 update();
 
 }
@@ -2187,20 +2628,25 @@ if(!x)return;
 
 editId=id;
 
-document.getElementById("editAmount").value=
-x.amount;
+document.getElementById(
+"editAmount"
+).value=x.amount;
 
-document.getElementById("editCurrency").value=
-x.currency;
+document.getElementById(
+"editCurrency"
+).value=x.currency;
 
-document.getElementById("editNote").value=
-x.note;
+document.getElementById(
+"editNote"
+).value=x.note;
 
-document.getElementById("editCategory").value=
-x.category;
+document.getElementById(
+"editCategory"
+).value=x.category;
 
-document.getElementById("modal").style.display=
-"block";
+document.getElementById(
+"modal"
+).style.display="block";
 
 }
 
@@ -2213,7 +2659,9 @@ x=>x.id===editId
 
 let a=
 Number(
-document.getElementById("editAmount").value
+document.getElementById(
+"editAmount"
+).value
 );
 
 if(!x||a<=0){
@@ -2226,19 +2674,24 @@ return;
 x.amount=a;
 
 x.currency=
-document.getElementById("editCurrency").value;
+document.getElementById(
+"editCurrency"
+).value;
 
 x.note=
-document.getElementById("editNote")
-.value.trim()||
+document.getElementById(
+"editNote"
+).value.trim()||
 (
-lang==="ar"?
-"مصروف يومي":
-"Daily Expense"
+lang==="ar"
+?"مصروف يومي"
+:"Daily Expense"
 );
 
 x.category=
-document.getElementById("editCategory").value;
+document.getElementById(
+"editCategory"
+).value;
 
 save();
 
@@ -2252,25 +2705,30 @@ function closeModal(){
 
 editId=null;
 
-document.getElementById("modal").style.display=
-"none";
+document.getElementById(
+"modal"
+).style.display="none";
 
 }
 
-/* =========================
-CLEAR
-========================= */
+
+/* =====================================================
+   CLEAR
+===================================================== */
 
 function clearMonth(){
 
-if(!confirm(t("confirm")))return;
+if(!confirm(t("confirm")))
+return;
 
 data[current]={
+
 income:null,
 budget:null,
-savingsGoal:null,
+dailyLimit:null,
 fixed:[],
 expenses:[]
+
 };
 
 save();
@@ -2279,14 +2737,132 @@ update();
 
 }
 
-/* =========================
-CALENDAR
-========================= */
+
+/* =====================================================
+   TODAY TOTAL
+===================================================== */
+
+function getTodayExpenses(){
+
+let today=
+new Date()
+.toISOString()
+.slice(0,10);
+
+return monthData()
+.expenses
+.filter(x=>x.date===today);
+
+}
+
+function getTodayTotal(){
+
+return total(
+getTodayExpenses()
+);
+
+}
+
+
+/* =====================================================
+   ALARMS
+===================================================== */
+
+function checkAlarms(){
+
+let m=monthData();
+
+let today=
+getTodayTotal();
+
+let dailyLimit=
+m.dailyLimit
+?
+toBase(
+m.dailyLimit.amount,
+m.dailyLimit.currency
+)
+:0;
+
+let monthly=
+total(m.expenses);
+
+let monthlyBudget=
+m.budget
+?
+toBase(
+m.budget.amount,
+m.budget.currency
+)
+:0;
+
+let dailyBox=
+document.getElementById(
+"dailyAlarm"
+);
+
+let monthlyBox=
+document.getElementById(
+"monthlyAlarm"
+);
+
+dailyBox.style.display="none";
+monthlyBox.style.display="none";
+
+if(
+dailyLimit>0 &&
+today>dailyLimit
+){
+
+let diff=today-dailyLimit;
+
+dailyBox.innerHTML=
+"🚨 "+
+t("dailyOver")+
+"<br>"+
+t("dailyDiff")+
+" <strong>"+
+money(diff)+
+"</strong>";
+
+dailyBox.style.display="block";
+
+}
+
+if(
+monthlyBudget>0 &&
+monthly>monthlyBudget
+){
+
+let diff=
+monthly-monthlyBudget;
+
+monthlyBox.innerHTML=
+"🚨 "+
+t("monthlyOver")+
+"<br>"+
+t("monthlyDiff")+
+" <strong>"+
+money(diff)+
+"</strong>";
+
+monthlyBox.style.display="block";
+
+}
+
+}
+
+
+/* =====================================================
+   CALENDAR
+===================================================== */
 
 function renderCalendar(){
 
 let box=
-document.getElementById("calendar");
+document.getElementById(
+"calendar"
+);
 
 box.innerHTML="";
 
@@ -2294,15 +2870,27 @@ let [year,month]=
 current.split("-").map(Number);
 
 let first=
-new Date(year,month-1,1);
+new Date(
+year,
+month-1,
+1
+);
 
 let last=
-new Date(year,month,0);
+new Date(
+year,
+month,
+0
+);
 
 let start=
 first.getDay();
 
-for(let i=0;i<start;i++){
+for(
+let i=0;
+i<start;
+i++
+){
 
 let e=
 document.createElement("div");
@@ -2325,7 +2913,8 @@ day++
 
 let date=
 year+"-"+
-String(month).padStart(2,"0")+"-"+
+String(month).padStart(2,"0")+
+"-"+
 String(day).padStart(2,"0");
 
 let dayExpenses=
@@ -2336,7 +2925,10 @@ x=>x.date===date
 let amount=
 dayExpenses.reduce(
 (s,x)=>
-s+toBase(x.amount,x.currency),
+s+toBase(
+x.amount,
+x.currency
+),
 0
 );
 
@@ -2347,7 +2939,9 @@ e.className="day";
 
 if(
 date===
-new Date().toISOString().slice(0,10)
+new Date()
+.toISOString()
+.slice(0,10)
 ){
 
 e.classList.add("today");
@@ -2361,18 +2955,19 @@ ${day}
 </div>
 
 ${
-amount>0?
-`
-<div class="day-total">
+amount>0
+?
+`<div class="day-total-calendar">
 ${money(amount)}
-</div>
-`
+</div>`
 :""
 }
 
 `;
 
-e.onclick=()=>showDay(date);
+e.onclick=()=>{
+showDay(date);
+};
 
 box.appendChild(e);
 
@@ -2383,9 +2978,9 @@ box.appendChild(e);
 function showDay(date){
 
 let list=
-monthData().expenses.filter(
-x=>x.date===date
-);
+monthData()
+.expenses
+.filter(x=>x.date===date);
 
 if(!list.length){
 
@@ -2395,39 +2990,47 @@ return;
 }
 
 let totalDay=
-list.reduce(
-(s,x)=>
-s+toBase(x.amount,x.currency),
-0
-);
+total(list);
 
 let text=
-t("dayExpenses")+"\n\n";
+t("dayExpenses")+
+"\n\n";
 
 list.forEach(x=>{
 
 text+=
-x.category+" "+
-x.note+" — "+
-money(x.amount,x.currency)+
+x.category+
+" "+
+x.note+
+" — "+
+money(
+x.amount,
+x.currency
+)+
 "\n";
 
 });
 
-text+="\n"+money(totalDay);
+text+="\n"+
+t("dayTotal")+
+": "+
+money(totalDay);
 
 alert(text);
 
 }
 
-/* =========================
-CATEGORY
-========================= */
+
+/* =====================================================
+   CATEGORY REPORT
+===================================================== */
 
 function renderCategoryReport(){
 
 let box=
-document.getElementById("categoryReport");
+document.getElementById(
+"categoryReport"
+);
 
 let list=
 monthData().expenses;
@@ -2449,10 +3052,14 @@ list.forEach(x=>{
 
 let key=x.category;
 
-if(!cats[key])cats[key]=0;
+if(!cats[key])
+cats[key]=0;
 
 cats[key]+=
-toBase(x.amount,x.currency);
+toBase(
+x.amount,
+x.currency
+);
 
 });
 
@@ -2479,9 +3086,7 @@ ${x[0]}
 
 <div
 class="category-fill"
-style="width:${
-max?x[1]/max*100:0
-}%">
+style="width:${max?x[1]/max*100:0}%">
 </div>
 
 </div>
@@ -2492,18 +3097,22 @@ ${money(x[1])}
 
 </div>
 
-`).join("");
+`)
+.join("");
 
 }
 
-/* =========================
-CHART
-========================= */
+
+/* =====================================================
+   CHART
+===================================================== */
 
 function renderChart(){
 
 let box=
-document.getElementById("dailyChart");
+document.getElementById(
+"dailyChart"
+);
 
 box.innerHTML="";
 
@@ -2511,7 +3120,11 @@ let [year,month]=
 current.split("-").map(Number);
 
 let days=
-new Date(year,month,0).getDate();
+new Date(
+year,
+month,
+0
+).getDate();
 
 let expenses=
 monthData().expenses;
@@ -2526,7 +3139,8 @@ day++
 
 let date=
 year+"-"+
-String(month).padStart(2,"0")+"-"+
+String(month).padStart(2,"0")+
+"-"+
 String(day).padStart(2,"0");
 
 let amount=
@@ -2534,7 +3148,10 @@ expenses
 .filter(x=>x.date===date)
 .reduce(
 (s,x)=>
-s+toBase(x.amount,x.currency),
+s+toBase(
+x.amount,
+x.currency
+),
 0
 );
 
@@ -2557,9 +3174,10 @@ col.innerHTML=`
 <div
 class="chart-bar"
 title="${money(v)}"
-style="height:${
-Math.max(3,v/max*125)
-}px">
+style="height:${Math.max(
+3,
+v/max*125
+)}px">
 </div>
 
 <div class="chart-label">
@@ -2574,9 +3192,10 @@ box.appendChild(col);
 
 }
 
-/* =========================
-SMART
-========================= */
+
+/* =====================================================
+   SMART SPENDING
+===================================================== */
 
 function renderSmart(){
 
@@ -2586,11 +3205,13 @@ let daily=
 total(m.expenses);
 
 let budget=
-m.budget?
+m.budget
+?
 toBase(
 m.budget.amount,
 m.budget.currency
-):0;
+)
+:0;
 
 let now=new Date();
 
@@ -2598,25 +3219,33 @@ let [year,month]=
 current.split("-").map(Number);
 
 let daysInMonth=
-new Date(year,month,0).getDate();
+new Date(
+year,
+month,
+0
+).getDate();
 
 let daysPassed=
 current===
 now.toISOString().slice(0,7)
 ?
-now.getDate():
+now.getDate()
+:
 daysInMonth;
 
 let average=
-daysPassed>0?
-daily/daysPassed:
+daysPassed>0
+?
+daily/daysPassed
+:
 0;
 
 let largest=0;
 
 m.expenses.forEach(x=>{
 
-largest=Math.max(
+largest=
+Math.max(
 largest,
 toBase(
 x.amount,
@@ -2633,7 +3262,8 @@ now.toISOString().slice(0,7)
 Math.max(
 0,
 daysInMonth-now.getDate()
-):
+)
+:
 0;
 
 document.getElementById(
@@ -2651,7 +3281,8 @@ document.getElementById(
 ).textContent=
 daysLeft;
 
-let message=t("smartGood");
+let message=
+t("smartGood");
 
 if(budget>0){
 
@@ -2670,9 +3301,10 @@ message;
 
 }
 
-/* =========================
-MAIN UPDATE
-========================= */
+
+/* =====================================================
+   MAIN UPDATE
+===================================================== */
 
 function update(){
 
@@ -2681,12 +3313,13 @@ months();
 let m=monthData();
 
 let income=
-m.income?
+m.income
+?
 toBase(
 m.income.amount,
 m.income.currency
-):
-0;
+)
+:0;
 
 let fixed=
 total(m.fixed);
@@ -2697,24 +3330,59 @@ total(m.expenses);
 let expenses=
 fixed+daily;
 
-let goal=
-m.savingsGoal?
+let budget=
+m.budget
+?
 toBase(
-m.savingsGoal.amount,
-m.savingsGoal.currency
-):
-0;
+m.budget.amount,
+m.budget.currency
+)
+:0;
+
+let dailyLimit=
+m.dailyLimit
+?
+toBase(
+m.dailyLimit.amount,
+m.dailyLimit.currency
+)
+:0;
+
+let todaySpent=
+getTodayTotal();
+
+let todayRemaining=
+dailyLimit-todaySpent;
 
 /*
-الرصيد الحقيقي المتاح:
+IMPORTANT:
+Remaining balance =
+Income
+- Fixed monthly expenses
+- Daily expenses
+- Savings goal
+*/
 
-المدخول
--
-المصاريف الثابتة
--
-المصاريف اليومية
--
-هدف التوفير
+let goal=
+m.budget
+?
+Math.max(
+0,
+income-fixed-budget
+)
+:
+Math.max(
+0,
+income-fixed
+);
+
+/*
+If user has a budget, the savings target
+is calculated from income after fixed expenses
+and the budget.
+
+For the dashboard balance we subtract
+the savings target too.
 */
 
 let balance=
@@ -2723,44 +3391,36 @@ fixed-
 daily-
 goal;
 
-/*
-المبلغ الذي بقي من المدخول
-قبل حجز هدف التوفير
-*/
+let budgetLeft=
+budget-daily;
 
-let savingsPossible=
+let budgetPct=
+budget>0
+?
+(daily/budget)*100
+:
+0;
+
+let dailyPct=
+dailyLimit>0
+?
+(todaySpent/dailyLimit)*100
+:
+0;
+
+let savings=
 Math.max(
 0,
 income-fixed-daily
 );
 
-let budget=
-m.budget?
-toBase(
-m.budget.amount,
-m.budget.currency
-):
-0;
-
-let budgetLeft=
-budget-daily;
-
-let budgetPct=
-budget>0?
-(daily/budget)*100:
-0;
-
-/*
-نسبة تحقيق هدف التوفير
-*/
-
 let savingPct=
-goal>0?
-Math.min(
-100,
-(savingsPossible/goal)*100
-):
+goal>0
+?
+(savings/goal)*100
+:
 0;
+
 
 /* DASHBOARD */
 
@@ -2790,7 +3450,8 @@ document.getElementById(
 t("base")+" "+
 settingsData.baseCurrency;
 
-/* BUDGET */
+
+/* MONTHLY BUDGET */
 
 document.getElementById(
 "budgetValue"
@@ -2806,7 +3467,10 @@ document.getElementById(
 "remainingValue"
 ).textContent=
 money(
-Math.max(0,budgetLeft)
+Math.max(
+0,
+budgetLeft
+)
 );
 
 document.getElementById(
@@ -2822,7 +3486,44 @@ document.getElementById(
 ).textContent=
 Math.round(budgetPct)+"%";
 
-/* SAVINGS GOAL */
+
+/* DAILY LIMIT */
+
+document.getElementById(
+"dailyLimitValue"
+).textContent=
+money(dailyLimit);
+
+document.getElementById(
+"todaySpentValue"
+).textContent=
+money(todaySpent);
+
+document.getElementById(
+"todayRemainingValue"
+).textContent=
+money(
+Math.max(
+0,
+todayRemaining
+)
+);
+
+document.getElementById(
+"dailyBar"
+).style.width=
+Math.min(
+100,
+Math.max(0,dailyPct)
+)+"%";
+
+document.getElementById(
+"dailyPercent"
+).textContent=
+Math.round(dailyPct)+"%";
+
+
+/* SAVINGS */
 
 document.getElementById(
 "goalValue"
@@ -2832,7 +3533,7 @@ money(goal);
 document.getElementById(
 "savingsValue"
 ).textContent=
-money(savingsPossible);
+money(savings);
 
 document.getElementById(
 "savingBar"
@@ -2847,12 +3548,6 @@ document.getElementById(
 ).textContent=
 Math.round(savingPct)+"%";
 
-/* AVAILABLE */
-
-document.getElementById(
-"availableBig"
-).textContent=
-money(balance);
 
 /* REPORT */
 
@@ -2889,50 +3584,59 @@ money(balance);
 document.getElementById(
 "rSavings"
 ).textContent=
-money(savingsPossible);
+money(savings);
+
 
 /* SAVED */
 
 document.getElementById(
 "incomeSaved"
 ).textContent=
-m.income?
+m.income
+?
 t("income")+": "+
 money(
 m.income.amount,
 m.income.currency
-):
-"";
+)
+:"";
 
 document.getElementById(
 "budgetSaved"
 ).textContent=
-m.budget?
+m.budget
+?
 t("budget")+": "+
 money(
 m.budget.amount,
 m.budget.currency
-):
-"";
+)
+:"";
 
 document.getElementById(
-"goalSaved"
+"dailyLimitSaved"
 ).textContent=
-m.savingsGoal?
-t("goal")+": "+
+m.dailyLimit
+?
+t("dailyLimitDash")+": "+
 money(
-m.savingsGoal.amount,
-m.savingsGoal.currency
-):
-"";
+m.dailyLimit.amount,
+m.dailyLimit.currency
+)
+:"";
 
-/* WARNINGS */
+
+/* NORMAL WARNING */
 
 let w=
-document.getElementById("warning");
+document.getElementById(
+"warning"
+);
 
 let s=
-document.getElementById("success");
+document.getElementById(
+"success"
+);
 
 w.style.display="none";
 s.style.display="none";
@@ -2958,6 +3662,7 @@ s.style.display="block";
 
 }
 
+
 /* RENDER */
 
 renderFixed();
@@ -2967,16 +3672,21 @@ renderCategoryReport();
 renderChart();
 renderSmart();
 
+checkAlarms();
+
 }
 
-/* =========================
-FIXED RENDER
-========================= */
+
+/* =====================================================
+   FIXED RENDER
+===================================================== */
 
 function renderFixed(){
 
 let box=
-document.getElementById("fixedList");
+document.getElementById(
+"fixedList"
+);
 
 let list=
 monthData().fixed;
@@ -3011,6 +3721,8 @@ ${escape(x.name)}
 
 <div class="small">
 ${x.currency}
+•
+${lang==="ar"?"شهري":"Monthly"}
 </div>
 
 </div>
@@ -3020,7 +3732,10 @@ ${x.currency}
 <div>
 
 <div class="amount blue">
-${money(x.amount,x.currency)}
+${money(
+x.amount,
+x.currency
+)}
 </div>
 
 <button
@@ -3039,18 +3754,22 @@ ${t("del")}
 
 </div>
 
-`).join("");
+`)
+.join("");
 
 }
 
-/* =========================
-HISTORY
-========================= */
+
+/* =====================================================
+   HISTORY GROUPED BY DAY
+===================================================== */
 
 function renderHistory(){
 
 let box=
-document.getElementById("history");
+document.getElementById(
+"history"
+);
 
 let list=
 monthData().expenses;
@@ -3066,40 +3785,119 @@ return;
 
 }
 
-box.innerHTML=
-list.map(x=>`
 
-<div class="item">
+/* MONTH TOTAL */
 
-<div class="left">
+let monthTotal=
+total(list);
 
-<div class="icon">
-${x.category}
+let html=`
+
+<div class="history-total">
+
+<span>
+${t("monthTotal")}
+</span>
+
+<strong class="red">
+${money(monthTotal)}
+</strong>
+
 </div>
+
+`;
+
+
+/* GROUP BY DATE */
+
+let groups={};
+
+list.forEach(x=>{
+
+let key=x.date;
+
+if(!groups[key])
+groups[key]=[];
+
+groups[key].push(x);
+
+});
+
+
+let dates=
+Object.keys(groups)
+.sort((a,b)=>b.localeCompare(a));
+
+
+dates.forEach(date=>{
+
+let dayList=
+groups[date];
+
+let dayTotal=
+total(dayList);
+
+let dateObj=
+new Date(date+"T12:00:00");
+
+let formatted=
+dateObj.toLocaleDateString(
+lang==="ar"
+?"ar-LB"
+:"en-US",
+{
+weekday:"long",
+year:"numeric",
+month:"long",
+day:"numeric"
+}
+);
+
+html+=`
+
+<div class="day-group">
+
+<div class="day-header">
+
+<div class="day-title">
+📅 ${formatted}
+</div>
+
+<div class="day-total">
+${money(dayTotal)}
+</div>
+
+</div>
+
+`;
+
+dayList.forEach(x=>{
+
+html+=`
+
+<div class="day-item">
 
 <div>
 
-<div class="name">
+<div class="day-note">
+${x.category}
 ${escape(x.note)}
 </div>
 
-<div class="small">
-${x.displayDate||x.date}
-•
+<div class="day-meta">
 ${x.time||""}
 •
 ${x.currency}
+•
+${money(
+x.amount,
+x.currency
+)}
 </div>
 
 </div>
 
-</div>
-
-<div>
-
-<div class="amount red">
--${money(x.amount,x.currency)}
-</div>
+<div class="day-actions">
 
 <button
 class="smallbtn edit"
@@ -3117,21 +3915,57 @@ ${t("del")}
 
 </div>
 
-`).join("");
+`;
+
+});
+
+html+=`
+
+</div>
+
+`;
+
+});
+
+
+box.innerHTML=html;
 
 }
 
-/* =========================
-BACKUP
-========================= */
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+function printHistory(){
+
+document.getElementById(
+"printDate"
+).textContent=
+t("printDate")+" "+
+new Date().toLocaleString(
+lang==="ar"
+?"ar-LB"
+:"en-US"
+);
+
+window.print();
+
+}
+
+
+/* =====================================================
+   BACKUP
+===================================================== */
 
 function backupData(){
 
 let backup={
 
-version:"4.1",
+version:"5.0",
 
-date:new Date().toISOString(),
+date:
+new Date().toISOString(),
 
 financeData:data,
 
@@ -3143,7 +3977,8 @@ currentMonth:current
 
 };
 
-let blob=new Blob(
+let blob=
+new Blob(
 [
 JSON.stringify(
 backup,
@@ -3187,12 +4022,15 @@ if(!file)return;
 let reader=
 new FileReader();
 
-reader.onload=function(e){
+reader.onload=
+function(e){
 
 try{
 
 let backup=
-JSON.parse(e.target.result);
+JSON.parse(
+e.target.result
+);
 
 if(backup.financeData)
 data=backup.financeData;
@@ -3200,7 +4038,14 @@ data=backup.financeData;
 if(backup.settings)
 settingsData=backup.settings;
 
-/* EUR compatibility */
+if(backup.language)
+lang=backup.language;
+
+if(backup.currentMonth)
+current=backup.currentMonth;
+
+
+/* compatibility */
 
 if(!settingsData.rates)
 settingsData.rates={};
@@ -3211,20 +4056,23 @@ settingsData.rates.USD=1;
 if(!settingsData.rates.CAD)
 settingsData.rates.CAD=1;
 
-if(!settingsData.rates.EUR)
-settingsData.rates.EUR=1;
-
 if(!settingsData.rates.LBP)
 settingsData.rates.LBP=1;
 
 if(!settingsData.rates.SYP)
 settingsData.rates.SYP=1;
 
-if(backup.language)
-lang=backup.language;
 
-if(backup.currentMonth)
-current=backup.currentMonth;
+Object.keys(data).forEach(month=>{
+
+if(!data[month].fixed)
+data[month].fixed=[];
+
+if(!data[month].expenses)
+data[month].expenses=[];
+
+});
+
 
 localStorage.setItem(
 "financeData",
@@ -3258,7 +4106,8 @@ lang==="ar"
 "Backup restored successfully ✅"
 );
 
-}catch(err){
+}
+catch(err){
 
 alert(
 lang==="ar"
@@ -3276,6 +4125,7 @@ reader.readAsText(file);
 
 }
 
+
 function resetAll(){
 
 let msg=
@@ -3285,7 +4135,8 @@ lang==="ar"
 :
 "⚠️ This will delete all Masrofi data. Are you sure?";
 
-if(!confirm(msg))return;
+if(!confirm(msg))
+return;
 
 localStorage.removeItem(
 "financeData"
@@ -3304,7 +4155,6 @@ baseCurrency:"USD",
 rates:{
 USD:1,
 CAD:1,
-EUR:1,
 LBP:1,
 SYP:1
 },
@@ -3318,6 +4168,8 @@ monthData();
 
 saveSettings();
 
+loadSettings();
+
 update();
 
 document.getElementById(
@@ -3326,16 +4178,17 @@ document.getElementById(
 
 }
 
-/* =========================
-LANGUAGE
-========================= */
+
+/* =====================================================
+   LANGUAGE
+===================================================== */
 
 function toggleLanguage(){
 
 lang=
-lang==="ar"?
-"en":
-"ar";
+lang==="ar"
+?"en"
+:"ar";
 
 localStorage.setItem(
 "language",
@@ -3362,154 +4215,218 @@ title:"title",
 subtitle:"subtitle",
 lang:"langBtn",
 settings:"settingsBtn",
+
 month:"monthTitle",
 prev:"prev",
 next:"next",
+
 balance:"balanceTitle",
+
 income:"incomeLabel",
 fixed:"fixedLabel",
 spent:"spentLabel1",
+
 budgetDash:"budgetDashboardTitle",
 budget:"budgetLabel",
 spentSoFar:"spentSoFar",
 remaining:"remainingBudget",
+
+dailyLimitDash:"dailyLimitDashLabel",
+todaySpent:"todaySpentLabel",
+todayRemaining:"todayRemainingLabel",
+
 goal:"goalLabel",
 savings:"currentSavingsLabel",
-available:"availableLabel",
-formula:"formulaLabel",
+
 report:"reportTitle",
+
 rates:"ratesTitle",
 ratesHelp:"ratesHelp",
 saveRates:"ratesBtn",
+
 incomeMonth:"incomeTitle",
 saveIncome:"incomeBtn",
+
 budgetMonth:"budgetTitle",
 budgetHelp:"budgetHelp",
 saveBudget:"budgetBtn",
-goalInput:"goalInputTitle",
-goalHelp:"goalHelp",
-saveGoal:"goalBtn",
+
+dailyLimitTitle:"dailyLimitTitle",
+dailyLimitHelp:"dailyLimitHelp",
+saveDailyLimit:"dailyLimitBtn",
+
 fixedTitle:"fixedTitle",
+fixedHelp:"fixedHelp",
 addFixed:"fixedBtn",
+
 daily:"dailyTitle",
 addDaily:"dailyBtn",
+
 history:"historyTitle",
+print:"printBtn",
 clear:"clearBtn",
+
 edit:"editTitle",
+
 smartTitle:"smartTitle",
+
 calendar:"calendarTitle",
 calendarHint:"calendarHint",
+
 advanced:"advancedTitle",
 category:"categoryTitle",
 chart:"dailyChartTitle",
+
 backup:"backupTitle",
 backupHelp:"backupHelp",
 backupBtn:"backupBtn",
 reset:"resetBtn",
+
 average:"dailyAverageLabel",
 largest:"largestLabel",
 days:"daysLeftLabel"
+
 };
+
 
 for(let k in ids){
 
 let el=
-document.getElementById(ids[k]);
+document.getElementById(
+ids[k]
+);
 
 if(
 el &&
 T[lang][k]!==undefined
-)
+){
+
 el.textContent=
 T[lang][k];
 
 }
+
+}
+
 
 document.getElementById(
 "baseLabel"
 ).textContent=
 lang==="ar"
 ?
-"العملة الأساسية":
+"العملة الأساسية"
+:
 "Base Currency";
+
 
 document.getElementById(
 "rIncomeLabel"
 ).textContent=
-lang==="ar"?
-"المدخول":
+lang==="ar"
+?
+"المدخول"
+:
 "Income";
+
 
 document.getElementById(
 "rFixedLabel"
 ).textContent=
-lang==="ar"?
-"المصاريف الثابتة":
+lang==="ar"
+?
+"المصاريف الثابتة"
+:
 "Fixed Expenses";
+
 
 document.getElementById(
 "rDailyLabel"
 ).textContent=
-lang==="ar"?
-"المصاريف اليومية":
+lang==="ar"
+?
+"المصاريف اليومية"
+:
 "Daily Expenses";
+
 
 document.getElementById(
 "rTotalLabel"
 ).textContent=
-lang==="ar"?
-"إجمالي المصاريف":
+lang==="ar"
+?
+"إجمالي المصاريف"
+:
 "Total Expenses";
+
 
 document.getElementById(
 "rGoalLabel"
 ).textContent=
-lang==="ar"?
-"🎯 هدف التوفير":
-"🎯 Savings Goal";
+lang==="ar"
+?
+"هدف التوفير"
+:
+"Savings Goal";
+
 
 document.getElementById(
 "rBalanceLabel"
 ).textContent=
-lang==="ar"?
-"الرصيد المتاح":
-"Available Balance";
+lang==="ar"
+?
+"الرصيد المتبقي"
+:
+"Remaining Balance";
+
 
 document.getElementById(
 "rSavingsLabel"
 ).textContent=
-lang==="ar"?
-"💵 التوفير الحالي":
+lang==="ar"
+?
+"💵 التوفير الحالي"
+:
 "💵 Current Savings";
+
 
 document.getElementById(
 "pinTitle"
 ).textContent=
-lang==="ar"?
-"مصروفي 🔐":
+lang==="ar"
+?
+"مصروفي 🔐"
+:
 "Masrofi 🔐";
+
 
 document.getElementById(
 "pinText"
 ).textContent=
-lang==="ar"?
-"أدخل رمز PIN للدخول":
+lang==="ar"
+?
+"أدخل رمز PIN للدخول"
+:
 "Enter your PIN to continue";
+
 
 document.getElementById(
 "pinEnter"
 ).textContent=
-lang==="ar"?
-"دخول":
+lang==="ar"
+?
+"دخول"
+:
 "Enter";
+
 
 update();
 
 }
 
-/* =========================
-SETTINGS
-========================= */
+
+/* =====================================================
+   SETTINGS
+===================================================== */
 
 function loadSettings(){
 
@@ -3522,9 +4439,6 @@ settingsData.rates.USD=1;
 if(!settingsData.rates.CAD)
 settingsData.rates.CAD=1;
 
-if(!settingsData.rates.EUR)
-settingsData.rates.EUR=1;
-
 if(!settingsData.rates.LBP)
 settingsData.rates.LBP=1;
 
@@ -3534,72 +4448,78 @@ settingsData.rates.SYP=1;
 if(!settingsData.baseCurrency)
 settingsData.baseCurrency="USD";
 
+
 document.getElementById(
 "baseCurrency"
 ).value=
 settingsData.baseCurrency;
+
 
 document.getElementById(
 "cad"
 ).value=
 settingsData.rates.CAD||"";
 
-document.getElementById(
-"eur"
-).value=
-settingsData.rates.EUR||"";
 
 document.getElementById(
 "lbp"
 ).value=
 settingsData.rates.LBP||"";
 
+
 document.getElementById(
 "syp"
 ).value=
 settingsData.rates.SYP||"";
 
+
 document.getElementById(
 "pinEnabled"
 ).value=
-settingsData.pinEnabled===false?
-"no":
+settingsData.pinEnabled===false
+?
+"no"
+:
 "yes";
+
 
 document.getElementById(
 "pinSettingsBox"
 ).style.display=
-settingsData.pinEnabled===false?
-"none":
+settingsData.pinEnabled===false
+?
+"none"
+:
 "block";
 
 }
+
 
 function saveRates(){
 
 let cad=
 Number(
-document.getElementById("cad").value
-);
-
-let eur=
-Number(
-document.getElementById("eur").value
+document.getElementById(
+"cad"
+).value
 );
 
 let lbp=
 Number(
-document.getElementById("lbp").value
+document.getElementById(
+"lbp"
+).value
 );
 
 let syp=
 Number(
-document.getElementById("syp").value
+document.getElementById(
+"syp"
+).value
 );
 
 if(
 cad<=0||
-eur<=0||
 lbp<=0||
 syp<=0
 ){
@@ -3613,7 +4533,6 @@ settingsData.rates={
 
 USD:1,
 CAD:cad,
-EUR:eur,
 LBP:lbp,
 SYP:syp
 
@@ -3626,11 +4545,13 @@ update();
 alert(
 lang==="ar"
 ?
-"تم حفظ أسعار الصرف ✅":
+"تم حفظ أسعار الصرف ✅"
+:
 "Exchange rates saved ✅"
 );
 
 }
+
 
 function changeBase(){
 
@@ -3645,9 +4566,10 @@ update();
 
 }
 
-/* =========================
-START
-========================= */
+
+/* =====================================================
+   START
+===================================================== */
 
 loadSettings();
 
@@ -3657,6 +4579,7 @@ applyLanguage();
 
 showPinLock();
 
+
 if("serviceWorker" in navigator){
 
 window.addEventListener(
@@ -3664,10 +4587,13 @@ window.addEventListener(
 ()=>{
 
 navigator.serviceWorker
-.register("./service-worker.js")
+.register(
+"./service-worker.js"
+)
 .catch(()=>{});
 
-});
+}
+);
 
 }
 
