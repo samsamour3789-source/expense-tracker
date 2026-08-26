@@ -11,6 +11,49 @@
 
 <style>
 *{
+/* =========================
+   MASROFI 6.0
+========================= */
+
+#smart6Card{
+border:1px solid #292929;
+}
+
+.forecast-good{
+background:#0d321d;
+border:1px solid #176b38;
+color:#58e58a;
+}
+
+.forecast-warning{
+background:#3b2d00;
+border:1px solid #735b00;
+color:#ffd85a;
+}
+
+.forecast-danger{
+background:#3a1113;
+border:1px solid #7a2529;
+color:#ff7272;
+}
+
+.afford-good{
+background:#0d321d;
+border:1px solid #176b38;
+color:#58e58a;
+}
+
+.afford-bad{
+background:#3a1113;
+border:1px solid #7a2529;
+color:#ff7272;
+}
+
+.afford-neutral{
+background:#191d2d;
+border:1px solid #293653;
+color:#9ebcff;
+}
 box-sizing:border-box;
 font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
 "Segoe UI",Arial,sans-serif
@@ -855,8 +898,24 @@ $0.00
 
 <div class="box">
 
-<div class="small" id="dailyLimitDashLabel">
-حد المصروف اليومي
+<div class="small" id="baseBalanceDashLabel">
+💰 الرصيد الأساسي
+</div>
+
+<div class="big blue" id="baseBalanceValue">
+$0
+</div>
+
+<div class="row">
+<span id="goalAddedLabel">
+هدف التوفير المضاف
+</span>
+
+<strong class="green" id="goalAddedValue">
+$0
+</strong>
+</div>
+
 </div>
 
 <div class="big gold" id="dailyLimitValue">$0</div>
@@ -877,7 +936,7 @@ $0.00
 
 <div class="small" id="dailyPercent">0%</div>
 
-</div>
+</>
 
 <div class="box">
 
@@ -1192,24 +1251,24 @@ id="budgetBtn">
 
 </div>
 
-<!-- DAILY LIMIT -->
+<!-- SAVINGS GOAL + BASE BALANCE -->
 
 <div class="card">
 
-<h2 id="dailyLimitTitle">
-🚨 حد المصروف اليومي
+<h2 id="savingsGoalTitle">
+🎯 هدف التوفير
 </h2>
 
-<div class="small" id="dailyLimitHelp">
-إذا تجاوزت هذا المبلغ في يوم واحد سيظهر تنبيه.
+<div class="small" id="savingsGoalHelp">
+المبلغ الذي تريد توفيره.
 </div>
 
 <input
 type="number"
-id="dailyLimitInput"
-placeholder="مثلاً 20">
+id="savingsGoalInput"
+placeholder="مثلاً 200">
 
-<select id="dailyLimitCurrency">
+<select id="savingsGoalCurrency">
 
 <option value="USD">🇺🇸 USD</option>
 <option value="CAD">🇨🇦 CAD</option>
@@ -1220,16 +1279,49 @@ placeholder="مثلاً 20">
 
 <button
 class="goldBtn"
-onclick="saveDailyLimit()"
-id="dailyLimitBtn">
-حفظ الحد اليومي
+onclick="saveSavingsGoal()"
+id="savingsGoalBtn">
+حفظ هدف التوفير
 </button>
 
-<div class="small" id="dailyLimitSaved"></div>
+<div class="small" id="savingsGoalSaved"></div>
 
 </div>
 
-<!-- FIXED -->
+<div class="card">
+
+<h2 id="baseBalanceTitle">
+💰 الرصيد الأساسي
+</h2>
+
+<div class="small" id="baseBalanceHelp">
+الرصيد الأساسي الذي يبدأ منه حسابك.
+</div>
+
+<input
+type="number"
+id="baseBalanceInput"
+placeholder="مثلاً 1000">
+
+<select id="baseBalanceCurrency">
+
+<option value="USD">🇺🇸 USD</option>
+<option value="CAD">🇨🇦 CAD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+
+</select>
+
+<button
+class="blueBtn"
+onclick="saveBaseBalance()"
+id="baseBalanceBtn">
+حفظ الرصيد الأساسي
+</button>
+
+<div class="small" id="baseBalanceSaved"></div>
+
+</div>
 
 <div class="card">
 
@@ -1827,7 +1919,8 @@ if(!data[current]){
 data[current]={
 income:null,
 budget:null,
-dailyLimit:null,
+savingsGoal:null,
+baseBalance:null,
 fixed:[],
 expenses:[]
 };
@@ -2422,6 +2515,7 @@ update();
 
 function saveBudget(){
 
+  
 let a=
 Number(
 document.getElementById(
@@ -3794,40 +3888,33 @@ m.budget.currency
 :
 0;
 
-let dailyLimit=
-m.dailyLimit
+let savingsGoal=
+m.savingsGoal
 ?
 toBase(
-m.dailyLimit.amount,
-m.dailyLimit.currency
+m.savingsGoal.amount,
+m.savingsGoal.currency
 )
 :
 0;
 
-let todaySpent=
-getTodayTotal();
-
-let todayRemaining=
-dailyLimit-todaySpent;
-
-let goal=
-m.budget
+let baseBalance=
+m.baseBalance
 ?
-Math.max(
-0,
-income-fixed-budget
+toBase(
+m.baseBalance.amount,
+m.baseBalance.currency
 )
 :
-Math.max(
-0,
-income-fixed
-);
+0;
+let goal=savingsGoal;
 
 let balance=
+baseBalance+
+goal+
 income-
 fixed-
-daily-
-goal;
+daily;
 
 let budgetLeft=
 budget-daily;
@@ -3890,9 +3977,14 @@ settingsData.baseCurrency;
 /* BUDGET */
 
 document.getElementById(
-"budgetValue"
+"baseBalanceValue"
 ).textContent=
-money(budget);
+money(baseBalance);
+
+document.getElementById(
+"goalAddedValue"
+).textContent=
+money(goal);
 
 document.getElementById(
 "spentValue"
@@ -4819,6 +4911,527 @@ update();
 }
 
 /* =====================================================
+   MASROFI 6.0 — SMART FINANCIAL ENGINE
+===================================================== */
+
+/* SAFE TO SPEND */
+
+function calculateSafeToSpend(){
+
+    let m=monthData();
+
+    let income=m.income
+        ? toBase(
+            m.income.amount,
+            m.income.currency
+        )
+        : 0;
+
+    let fixed=total(m.fixed);
+
+    let spent=total(m.expenses);
+
+    let budget=m.budget
+        ? toBase(
+            m.budget.amount,
+            m.budget.currency
+        )
+        : 0;
+
+    let goal=m.budget
+        ? Math.max(
+            0,
+            income-fixed-budget
+        )
+        : 0;
+
+    let now=new Date();
+
+    let parts=current.split("-").map(Number);
+
+    let year=parts[0];
+    let month=parts[1];
+
+    let daysInMonth=
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
+
+    let currentMonth=
+        now.getFullYear()+"-"+
+        String(
+            now.getMonth()+1
+        ).padStart(2,"0");
+
+    let daysLeft;
+
+    if(current===currentMonth){
+
+        daysLeft=
+            Math.max(
+                1,
+                daysInMonth-now.getDate()+1
+            );
+
+    }else if(current>currentMonth){
+
+        daysLeft=daysInMonth;
+
+    }else{
+
+        daysLeft=0;
+
+    }
+
+    let available;
+
+    if(budget>0){
+
+        available=
+            Math.max(
+                0,
+                budget-spent
+            );
+
+    }else{
+
+        available=
+            Math.max(
+                0,
+                income-fixed-goal-spent
+            );
+
+    }
+
+    let safe=
+        daysLeft>0
+        ?
+        available/daysLeft
+        :
+        available;
+
+    return safe;
+
+}
+
+
+/* FORECAST */
+
+function calculateForecast(){
+
+    let m=monthData();
+
+    let spent=
+        total(m.expenses);
+
+    let now=new Date();
+
+    let parts=current.split("-").map(Number);
+
+    let year=parts[0];
+    let month=parts[1];
+
+    let daysInMonth=
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
+
+    let currentMonth=
+        now.getFullYear()+"-"+
+        String(
+            now.getMonth()+1
+        ).padStart(2,"0");
+
+    let daysPassed;
+
+    if(current===currentMonth){
+
+        daysPassed=
+            Math.max(
+                1,
+                now.getDate()
+            );
+
+    }else{
+
+        daysPassed=daysInMonth;
+
+    }
+
+    let average=
+        spent/daysPassed;
+
+    let forecast=
+        average*daysInMonth;
+
+    let income=
+        m.income
+        ?
+        toBase(
+            m.income.amount,
+            m.income.currency
+        )
+        :
+        0;
+
+    let fixed=
+        total(m.fixed);
+
+    let savingsGoal=
+        m.budget
+        ?
+        Math.max(
+            0,
+            income-fixed-
+            toBase(
+                m.budget.amount,
+                m.budget.currency
+            )
+        )
+        :
+        0;
+
+    let forecastBalance=
+        income-
+        fixed-
+        forecast-
+        savingsGoal;
+
+    return {
+        spent,
+        forecast,
+        forecastBalance,
+        average
+    };
+
+}
+
+
+/* RENDER SAFE TO SPEND */
+
+function renderSafeToSpend(){
+
+    let safe=
+        calculateSafeToSpend();
+
+    let el=
+        document.getElementById(
+            "safeSpend"
+        );
+
+    if(el){
+
+        el.textContent=
+            money(safe);
+
+    }
+
+}
+
+
+/* RENDER FORECAST */
+
+function renderForecast(){
+
+    let result=
+        calculateForecast();
+
+    let spentEl=
+        document.getElementById(
+            "forecastSpent"
+        );
+
+    let balanceEl=
+        document.getElementById(
+            "forecastBalance"
+        );
+
+    let message=
+        document.getElementById(
+            "forecastMessage"
+        );
+
+    if(!spentEl||!balanceEl||!message)
+        return;
+
+    spentEl.textContent=
+        money(result.forecast);
+
+    balanceEl.textContent=
+        money(result.forecastBalance);
+
+    message.className="smart";
+
+    if(result.spent===0){
+
+        message.textContent=
+            lang==="ar"
+            ?
+            "سجّل بعض المصاريف حتى يصبح التوقع أدق."
+            :
+            "Add some expenses to make the forecast more accurate.";
+
+        return;
+
+    }
+
+    if(result.forecastBalance<0){
+
+        message.classList.add(
+            "forecast-danger"
+        );
+
+        message.textContent=
+            lang==="ar"
+            ?
+            "🚨 إذا استمررت بنفس معدل الصرف، قد تتجاوز ميزانيتك قبل نهاية الشهر."
+            :
+            "🚨 At your current spending rate, you may run out of budget before month end.";
+
+    }else if(
+        result.forecastBalance<
+        result.forecast*0.15
+    ){
+
+        message.classList.add(
+            "forecast-warning"
+        );
+
+        message.textContent=
+            lang==="ar"
+            ?
+            "⚠️ التوقع جيد لكن الهامش المتبقي قليل. حاول تخفيف المصروف."
+            :
+            "⚠️ The forecast is positive, but your remaining margin is small.";
+
+    }else{
+
+        message.classList.add(
+            "forecast-good"
+        );
+
+        message.textContent=
+            lang==="ar"
+            ?
+            "✅ ممتاز! إذا حافظت على نفس النمط، وضعك المالي يبدو جيداً."
+            :
+            "✅ Great! If you keep this spending pattern, your forecast looks healthy.";
+
+    }
+
+}
+
+
+/* CAN I AFFORD IT */
+
+function checkAffordability(){
+
+    let name=
+        document.getElementById(
+            "affordName"
+        ).value.trim();
+
+    let amount=
+        Number(
+            document.getElementById(
+                "affordAmount"
+            ).value
+        );
+
+    let currency=
+        document.getElementById(
+            "affordCurrency"
+        ).value;
+
+    let result=
+        document.getElementById(
+            "affordResult"
+        );
+
+    if(!name||amount<=0){
+
+        result.className=
+            "smart afford-neutral";
+
+        result.textContent=
+            lang==="ar"
+            ?
+            "⚠️ أدخل اسم المنتج والسعر."
+            :
+            "⚠️ Enter the item name and price.";
+
+        return;
+
+    }
+
+    let purchase=
+        toBase(
+            amount,
+            currency
+        );
+
+    let m=monthData();
+
+    let income=
+        m.income
+        ?
+        toBase(
+            m.income.amount,
+            m.income.currency
+        )
+        :
+        0;
+
+    let fixed=
+        total(m.fixed);
+
+    let spent=
+        total(m.expenses);
+
+    let budget=
+        m.budget
+        ?
+        toBase(
+            m.budget.amount,
+            m.budget.currency
+        )
+        :
+        0;
+
+    let goal=
+        m.budget
+        ?
+        Math.max(
+            0,
+            income-fixed-budget
+        )
+        :
+        0;
+
+    let balance=
+        income-
+        fixed-
+        spent-
+        goal;
+
+    let safe=
+        calculateSafeToSpend();
+
+    let after=
+        balance-purchase;
+
+    result.className=
+        "smart";
+
+    if(
+        purchase<=safe*7 &&
+        after>=0
+    ){
+
+        result.classList.add(
+            "afford-good"
+        );
+
+        result.innerHTML=
+            lang==="ar"
+            ?
+            `
+            🟢 <strong>نعم، تستطيع شراء ${escape(name)}</strong><br><br>
+            السعر: ${money(purchase)}<br>
+            الرصيد بعد الشراء: ${money(after)}<br>
+            المصروف الآمن اليومي: ${money(safe)}
+            `
+            :
+            `
+            🟢 <strong>Yes, you can afford ${escape(name)}</strong><br><br>
+            Price: ${money(purchase)}<br>
+            Balance after purchase: ${money(after)}<br>
+            Safe daily spending: ${money(safe)}
+            `;
+
+    }else if(after>=0){
+
+        result.classList.add(
+            "afford-neutral"
+        );
+
+        result.innerHTML=
+            lang==="ar"
+            ?
+            `
+            🟡 يمكنك شراء ${escape(name)}،
+            لكن السعر مرتفع مقارنة بمصروفك الآمن.<br><br>
+            السعر: ${money(purchase)}<br>
+            الرصيد بعد الشراء: ${money(after)}<br>
+            المصروف الآمن اليومي: ${money(safe)}
+            `
+            :
+            `
+            🟡 You can afford ${escape(name)},
+            but it is expensive compared with your safe spending level.<br><br>
+            Price: ${money(purchase)}<br>
+            Balance after purchase: ${money(after)}<br>
+            Safe daily spending: ${money(safe)}
+            `;
+
+    }else{
+
+        result.classList.add(
+            "afford-bad"
+        );
+
+        result.innerHTML=
+            lang==="ar"
+            ?
+            `
+            🔴 <strong>الأفضل ألا تشتري ${escape(name)} الآن.</strong><br><br>
+            السعر: ${money(purchase)}<br>
+            الرصيد الحالي: ${money(balance)}<br>
+            الرصيد بعد الشراء: ${money(after)}<br><br>
+            ⚠️ هذا الشراء سيجعلك تتجاوز خطتك المالية.
+            `
+            :
+            `
+            🔴 <strong>It is better not to buy ${escape(name)} right now.</strong><br><br>
+            Price: ${money(purchase)}<br>
+            Current balance: ${money(balance)}<br>
+            Balance after purchase: ${money(after)}<br><br>
+            ⚠️ This purchase would put you outside your financial plan.
+            `;
+
+    }
+
+}
+
+
+/* MASTER RENDER */
+
+function renderMasrofi6(){
+
+    renderSafeToSpend();
+
+    renderForecast();
+
+}
+
+
+/* ADD TO EXISTING UPDATE */
+
+const originalUpdate=
+    update;
+
+update=function(){
+
+    originalUpdate();
+
+    renderMasrofi6();
+
+};
+/* =====================================================
    START
 ===================================================== */
 
@@ -4853,5 +5466,76 @@ navigator.serviceWorker
 
 </script>
 
+<!-- MASROFI 6.0 SMART FEATURES -->
+
+<div class="card" id="smart6Card">
+
+<h2>🚀 Masrofi 6.0</h2>
+
+<div class="box">
+
+<h3>🟢 Safe to Spend</h3>
+
+<div class="big green" id="safeSpend">$0.00</div>
+
+<div class="small">
+المبلغ الآمن الذي يمكنك صرفه اليوم
+</div>
+
+</div>
+
+<div class="box">
+
+<h3>🔮 توقع نهاية الشهر</h3>
+
+<div class="row">
+<span>المصروف المتوقع</span>
+<strong class="red" id="forecastSpent">$0</strong>
+</div>
+
+<div class="row">
+<span>الرصيد المتوقع</span>
+<strong class="green" id="forecastBalance">$0</strong>
+</div>
+
+<div id="forecastMessage" class="smart">
+سيظهر التوقع بعد تسجيل بعض المصاريف.
+</div>
+
+</div>
+
+<div class="box">
+
+<h3>🧠 Can I Afford It?</h3>
+
+<input
+id="affordName"
+placeholder="مثلاً iPhone">
+
+<input
+type="number"
+id="affordAmount"
+placeholder="السعر">
+
+<select id="affordCurrency">
+<option value="USD">🇺🇸 USD</option>
+<option value="CAD">🇨🇦 CAD</option>
+<option value="LBP">🇱🇧 LBP</option>
+<option value="SYP">🇸🇾 SYP</option>
+</select>
+
+<button
+class="goldBtn"
+onclick="checkAffordability()">
+🧠 هل أستطيع شراءه؟
+</button>
+
+<div id="affordResult" class="smart">
+أدخل السعر لمعرفة إذا كان الشراء مناسباً.
+</div>
+
+</div>
+
+</div>
 </body>
 </html>
